@@ -1,7 +1,4 @@
-hsdjkdgsjknsd bxzfkbkjbkigsdf
-
-fdglkmngkfsdnnlgsndfladb
-gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -31,7 +28,7 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       line-height: 1.6;
     }
 
-    /* Tela de Login - já visível ao abrir */
+    /* Tela de Login */
     .tela-login {
       display: flex;
       align-items: center;
@@ -51,7 +48,7 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
     .card-login h1 {
       text-align: center;
       color: var(--primary);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
       font-size: 1.6rem;
     }
     .card-login p {
@@ -60,7 +57,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       margin-bottom: 1.5rem;
     }
 
-    /* Campos e botões */
     input {
       width: 100%;
       padding: 0.9rem;
@@ -85,7 +81,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       background: #1d4ed8;
     }
 
-    /* Mensagens */
     .msg {
       padding: 1rem;
       border-radius: 6px;
@@ -104,7 +99,7 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       display: block;
     }
 
-    /* Tela principal (aparece só após login) */
+    /* Tela Principal */
     .tela-principal {
       display: none;
     }
@@ -224,7 +219,7 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
 </head>
 <body>
 
-  <!-- Tela de Login - aparece logo ao abrir a página -->
+  <!-- Tela de Login: APENAS Matrícula e Senha -->
   <div class="tela-login" id="telaLogin">
     <div class="card-login">
       <h1>Sisgespe</h1>
@@ -239,7 +234,7 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
     </div>
   </div>
 
-  <!-- Tela Principal - só aparece após login válido -->
+  <!-- Tela Principal -->
   <div class="tela-principal" id="telaPrincipal">
     <header>
       <h1>Meu Painel</h1>
@@ -273,7 +268,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
     </nav>
 
     <main>
-      <!-- Página Ponto -->
       <div id="pag-ponto" class="pagina ativa">
         <h3>Controle de Ponto</h3>
         <p>Data: <strong id="dataHoje"></strong> | Hora: <strong id="horaAtual"></strong></p>
@@ -288,7 +282,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
         </table>
       </div>
 
-      <!-- Página Férias -->
       <div id="pag-ferias" class="pagina">
         <h3>Solicitar Férias</h3>
         <input type="date" id="inicioFerias" placeholder="Data de início">
@@ -303,7 +296,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
         </table>
       </div>
 
-      <!-- Página Atestados -->
       <div id="pag-atestados" class="pagina">
         <h3>Enviar Atestado</h3>
         <textarea id="descricaoAtestado" rows="4" placeholder="Descreva o motivo e período do atestado..."></textarea>
@@ -317,13 +309,11 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
         </table>
       </div>
 
-      <!-- Página Dados -->
       <div id="pag-dados" class="pagina">
         <h3>Meus Dados Cadastrais</h3>
         <div id="dadosCadastrais"></div>
       </div>
 
-      <!-- Página Comunicados -->
       <div id="pag-comunicados" class="pagina">
         <h3>Avisos e Comunicados</h3>
         <div id="listaComunicados"></div>
@@ -334,7 +324,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
   <script>
     let usuarioLogado = null;
 
-    // Função de login
     async function fazerLogin() {
       const matricula = document.getElementById('matricula').value.trim();
       const senha = document.getElementById('senha').value;
@@ -346,10 +335,9 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
         return;
       }
 
-      // Criptografa a senha para comparação
+      // Mesmo formato usado para salvar
       const senhaHash = btoa(senha);
 
-      // Busca no banco
       const { data, error } = await supabase
         .from('colaboradores')
         .select('*')
@@ -364,7 +352,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
         return;
       }
 
-      // Login bem-sucedido
       usuarioLogado = data;
       document.getElementById('nomeUsuario').textContent = data.nome;
       document.getElementById('telaLogin').style.display = 'none';
@@ -374,7 +361,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       carregarTodosDados();
     }
 
-    // Sair do sistema
     function sair() {
       usuarioLogado = null;
       document.getElementById('telaPrincipal').style.display = 'none';
@@ -383,13 +369,11 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       document.getElementById('senha').value = '';
     }
 
-    // Trocar páginas
     function abrirPagina(id) {
       document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
       document.getElementById('pag-' + id).classList.add('ativa');
     }
 
-    // Atualizar data e hora
     function atualizarHora() {
       const agora = new Date();
       document.getElementById('dataHoje').textContent = agora.toLocaleDateString('pt-BR');
@@ -397,7 +381,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
     }
     setInterval(atualizarHora, 1000);
 
-    // Marcar ponto
     async function marcarPonto() {
       const agora = new Date();
       const registro = {
@@ -428,7 +411,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       `).join('') || "<tr><td colspan='3'>Nenhum registro encontrado</td></tr>";
     }
 
-    // Solicitar férias
     async function solicitarFerias() {
       const inicio = document.getElementById('inicioFerias').value;
       const dias = document.getElementById('diasFerias').value;
@@ -465,7 +447,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       `).join('') || "<tr><td colspan='3'>Nenhuma solicitação</td></tr>";
     }
 
-    // Enviar atestado
     async function enviarAtestado() {
       const descricao = document.getElementById('descricaoAtestado').value.trim();
       const msg = document.getElementById('msgAtestado');
@@ -501,7 +482,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       `).join('') || "<tr><td colspan='3'>Nenhum atestado enviado</td></tr>";
     }
 
-    // Dados cadastrais
     async function carregarDadosCadastrais() {
       document.getElementById('dadosCadastrais').innerHTML = `
         <p style="margin: 0.6rem 0;"><strong>Matrícula:</strong> ${usuarioLogado.matricula}</p>
@@ -513,7 +493,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       `;
     }
 
-    // Comunicados
     async function carregarComunicados() {
       const { data } = await supabase.from('comunicados').select('*').order('criado_em', {ascending: false});
       document.getElementById('listaComunicados').innerHTML = data?.map(c => `
@@ -525,7 +504,6 @@ gkjnkjgbnlangbkdfkgoikjk<!DOCTYPE html7887777hgjdhyjhgjf>
       `).join('') || "<p>Nenhum comunicado disponível</p>";
     }
 
-    // Carrega tudo após login
     function carregarTodosDados() {
       carregarHistoricoPonto();
       carregarMinhasFerias();
