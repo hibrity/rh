@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sisgespe - Acesso do Colaborador</title>
+  <title>Sisgespe - Painel RH</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -27,84 +27,6 @@
       color: var(--text);
       line-height: 1.6;
     }
-
-    /* Tela de Login - já visível ao abrir */
-    .tela-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    .card-login {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .card-login h1 {
-      text-align: center;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-      font-size: 1.6rem;
-    }
-    .card-login p {
-      text-align: center;
-      color: var(--text-light);
-      margin-bottom: 1.5rem;
-    }
-
-    /* Campos e botões */
-    input {
-      width: 100%;
-      padding: 0.9rem;
-      margin: 0.5rem 0 1rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 0.9rem;
-      border: none;
-      border-radius: 6px;
-      background: var(--primary);
-      color: white;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
-
-    /* Mensagens */
-    .msg {
-      padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
-      text-align: center;
-      display: none;
-    }
-    .sucesso {
-      background: rgba(16, 185, 129, 0.15);
-      color: #065f46;
-      display: block;
-    }
-    .erro {
-      background: rgba(239, 68, 68, 0.15);
-      color: #991b1b;
-      display: block;
-    }
-
-    /* Tela principal (aparece só após login) */
-    .tela-principal {
-      display: none;
-    }
     header {
       background: var(--bg);
       border-bottom: 1px solid var(--border);
@@ -113,19 +35,21 @@
       justify-content: space-between;
       align-items: center;
     }
-    .usuario {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .btn-sair {
-      background: var(--erro);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
+    .status-conexao {
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      background: var(--sucesso);
       color: white;
-      border: none;
-      cursor: pointer;
-      width: auto;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .cabecalho-texto h1 {
+      font-size: 1.5rem;
+      color: var(--text);
+    }
+    .cabecalho-texto p {
+      color: var(--text-light);
+      font-size: 1rem;
     }
     nav {
       max-width: 900px;
@@ -172,6 +96,7 @@
       border: 1px solid var(--border);
       padding: 1.8rem;
       margin-top: 1.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .pagina.ativa {
       display: block;
@@ -183,13 +108,26 @@
       padding-bottom: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
-    textarea {
+    input, textarea {
       width: 100%;
       padding: 0.8rem;
       margin: 0.5rem 0 1rem;
       border: 1px solid var(--border);
       border-radius: 6px;
       font-size: 1rem;
+    }
+    button {
+      padding: 0.8rem 1.4rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--primary);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #1d4ed8;
     }
     table {
       width: 100%;
@@ -204,6 +142,22 @@
     th {
       background: #f8fafc;
       font-weight: 600;
+    }
+    .msg {
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      display: none;
+    }
+    .sucesso {
+      background: rgba(16, 185, 129, 0.15);
+      color: #065f46;
+      display: block;
+    }
+    .erro {
+      background: rgba(239, 68, 68, 0.15);
+      color: #991b1b;
+      display: block;
     }
     .status {
       font-weight: bold;
@@ -220,316 +174,234 @@
   </script>
 </head>
 <body>
-
-  <!-- Tela de Login - aparece logo ao abrir a página -->
-  <div class="tela-login" id="telaLogin">
-    <div class="card-login">
-      <h1>Sisgespe</h1>
-      <p>Acesso do Colaborador</p>
-      
-      <input type="text" id="matricula" placeholder="Digite sua Matrícula" required>
-      <input type="password" id="senha" placeholder="Digite sua Senha" required>
-      
-      <button onclick="fazerLogin()">Entrar no Sistema</button>
-      
-      <div id="msgLogin" class="msg"></div>
+  <header>
+    <div class="cabecalho-texto">
+      <h1>Painel RH</h1>
+      <p>Controle completo dos colaboradores</p>
     </div>
-  </div>
+    <div class="status-conexao">Conectado</div>
+  </header>
 
-  <!-- Tela Principal - só aparece após login válido -->
-  <div class="tela-principal" id="telaPrincipal">
-    <header>
-      <h1>Meu Painel</h1>
-      <div class="usuario">
-        <span id="nomeUsuario"></span>
-        <button class="btn-sair" onclick="sair()">Sair</button>
-      </div>
-    </header>
+  <nav>
+    <div class="item-menu" onclick="abrirPagina('colaboradores')">
+      <h2>👥 Colaboradores</h2>
+      <p>Cadastro e dados</p>
+    </div>
+    <div class="item-menu" onclick="abrirPagina('ponto')">
+      <h2>🕒 Controle de Ponto</h2>
+      <p>Visualizar marcações</p>
+    </div>
+    <div class="item-menu" onclick="abrirPagina('ferias')">
+      <h2>🏖️ Férias</h2>
+      <p>Aprovar solicitações</p>
+    </div>
+    <div class="item-menu" onclick="abrirPagina('atestados')">
+      <h2>📄 Atestados</h2>
+      <p>Analisar envios</p>
+    </div>
+    <div class="item-menu" onclick="abrirPagina('comunicados')">
+      <h2>📢 Comunicados</h2>
+      <p>Publicar avisos</p>
+    </div>
+  </nav>
 
-    <nav>
-      <div class="item-menu" onclick="abrirPagina('ponto')">
-        <h2>🕒 Controle de Ponto</h2>
-        <p>Marcar e consultar horários</p>
-      </div>
-      <div class="item-menu" onclick="abrirPagina('ferias')">
-        <h2>🏖️ Férias</h2>
-        <p>Solicitar e acompanhar</p>
-      </div>
-      <div class="item-menu" onclick="abrirPagina('atestados')">
-        <h2>📑 Atestados</h2>
-        <p>Enviar e ver status</p>
-      </div>
-      <div class="item-menu" onclick="abrirPagina('dados')">
-        <h2>👤 Meus Dados</h2>
-        <p>Informações cadastrais</p>
-      </div>
-      <div class="item-menu" onclick="abrirPagina('comunicados')">
-        <h2>📢 Comunicados</h2>
-        <p>Avisos da empresa</p>
-      </div>
-    </nav>
+  <main>
+    <div id="pag-colaboradores" class="pagina">
+      <h3>Cadastro e Dados</h3>
+      <input type="text" id="matricula" placeholder="Matrícula" required>
+      <input type="text" id="nome" placeholder="Nome completo" required>
+      <input type="text" id="cpf" placeholder="CPF" required>
+      <input type="text" id="cargo" placeholder="Cargo">
+      <input type="date" id="admissao">
+      <input type="text" id="setor" placeholder="Setor">
+      <input type="password" id="senha" placeholder="Senha de acesso" required>
+      <button onclick="salvarColaborador()">Salvar Cadastro</button>
+      <div id="msgColab" class="msg"></div>
 
-    <main>
-      <!-- Página Ponto -->
-      <div id="pag-ponto" class="pagina ativa">
-        <h3>Controle de Ponto</h3>
-        <p>Data: <strong id="dataHoje"></strong> | Hora: <strong id="horaAtual"></strong></p>
-        <br>
-        <button onclick="marcarPonto()">🕒 Marcar Ponto Agora</button>
-        <div id="msgPonto" class="msg"></div>
+      <h3 style="margin-top: 2rem;">Lista de Colaboradores</h3>
+      <button onclick="carregarColaboradores()">Atualizar Lista</button>
+      <table>
+        <thead>
+          <tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Setor</th><th>Status</th></tr>
+        </thead>
+        <tbody id="listaColab"></tbody>
+      </table>
+    </div>
 
-        <h3 style="margin-top: 2rem;">Meus Registros</h3>
-        <table>
-          <thead><tr><th>Data</th><th>Horário</th><th>Método</th></tr></thead>
-          <tbody id="tabelaPonto"></tbody>
-        </table>
-      </div>
+    <div id="pag-ponto" class="pagina">
+      <h3>Marcações de Ponto</h3>
+      <button onclick="carregarPonto()">Atualizar Registros</button>
+      <table>
+        <thead>
+          <tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Horário</th><th>Método</th></tr>
+        </thead>
+        <tbody id="listaPonto"></tbody>
+      </table>
+    </div>
 
-      <!-- Página Férias -->
-      <div id="pag-ferias" class="pagina">
-        <h3>Solicitar Férias</h3>
-        <input type="date" id="inicioFerias" placeholder="Data de início">
-        <input type="number" id="diasFerias" min="5" max="30" placeholder="Quantidade de dias">
-        <button onclick="solicitarFerias()">Enviar Solicitação</button>
-        <div id="msgFerias" class="msg"></div>
+    <div id="pag-ferias" class="pagina">
+      <h3>Solicitações de Férias</h3>
+      <button onclick="carregarFerias()">Atualizar Solicitações</button>
+      <table>
+        <thead>
+          <tr><th>Matrícula</th><th>Nome</th><th>Início</th><th>Dias</th><th>Status</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="listaFerias"></tbody>
+      </table>
+    </div>
 
-        <h3 style="margin-top: 2rem;">Minhas Solicitações</h3>
-        <table>
-          <thead><tr><th>Início</th><th>Dias</th><th>Status</th></tr></thead>
-          <tbody id="tabelaFerias"></tbody>
-        </table>
-      </div>
+    <div id="pag-atestados" class="pagina">
+      <h3>Atestados Recebidos</h3>
+      <button onclick="carregarAtestados()">Atualizar Atestados</button>
+      <table>
+        <thead>
+          <tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Descrição</th><th>Status</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="listaAtestados"></tbody>
+      </table>
+    </div>
 
-      <!-- Página Atestados -->
-      <div id="pag-atestados" class="pagina">
-        <h3>Enviar Atestado</h3>
-        <textarea id="descricaoAtestado" rows="4" placeholder="Descreva o motivo e período do atestado..."></textarea>
-        <button onclick="enviarAtestado()">Enviar Atestado</button>
-        <div id="msgAtestado" class="msg"></div>
+    <div id="pag-comunicados" class="pagina">
+      <h3>Publicar Aviso</h3>
+      <input type="text" id="titulo" placeholder="Título do comunicado" required>
+      <textarea id="conteudo" rows="4" placeholder="Texto completo" required></textarea>
+      <button onclick="publicarComunicado()">Publicar</button>
+      <div id="msgComunicado" class="msg"></div>
 
-        <h3 style="margin-top: 2rem;">Meus Atestados</h3>
-        <table>
-          <thead><tr><th>Data Envio</th><th>Descrição</th><th>Status</th></tr></thead>
-          <tbody id="tabelaAtestados"></tbody>
-        </table>
-      </div>
-
-      <!-- Página Dados -->
-      <div id="pag-dados" class="pagina">
-        <h3>Meus Dados Cadastrais</h3>
-        <div id="dadosCadastrais"></div>
-      </div>
-
-      <!-- Página Comunicados -->
-      <div id="pag-comunicados" class="pagina">
-        <h3>Avisos e Comunicados</h3>
-        <div id="listaComunicados"></div>
-      </div>
-    </main>
-  </div>
+      <h3 style="margin-top: 2rem;">Últimos Comunicados</h3>
+      <div id="listaComunicados"></div>
+    </div>
+  </main>
 
   <script>
-    let usuarioLogado = null;
-
-    // Função de login
-    async function fazerLogin() {
-      const matricula = document.getElementById('matricula').value.trim();
-      const senha = document.getElementById('senha').value;
-      const msg = document.getElementById('msgLogin');
-
-      if (!matricula || !senha) {
-        msg.textContent = "Preencha Matrícula e Senha!";
-        msg.className = "msg erro";
-        return;
-      }
-
-      // Criptografa a senha para comparação
-      const senhaHash = btoa(senha);
-
-      // Busca no banco
-      const { data, error } = await supabase
-        .from('colaboradores')
-        .select('*')
-        .eq('matricula', matricula)
-        .eq('senha_hash', senhaHash)
-        .eq('ativo', true)
-        .single();
-
-      if (error || !data) {
-        msg.textContent = "Matrícula ou Senha incorretos!";
-        msg.className = "msg erro";
-        return;
-      }
-
-      // Login bem-sucedido
-      usuarioLogado = data;
-      document.getElementById('nomeUsuario').textContent = data.nome;
-      document.getElementById('telaLogin').style.display = 'none';
-      document.getElementById('telaPrincipal').style.display = 'block';
-      
-      atualizarHora();
-      carregarTodosDados();
-    }
-
-    // Sair do sistema
-    function sair() {
-      usuarioLogado = null;
-      document.getElementById('telaPrincipal').style.display = 'none';
-      document.getElementById('telaLogin').style.display = 'flex';
-      document.getElementById('matricula').value = '';
-      document.getElementById('senha').value = '';
-    }
-
-    // Trocar páginas
     function abrirPagina(id) {
       document.querySelectorAll('.pagina').forEach(p => p.classList.remove('ativa'));
       document.getElementById('pag-' + id).classList.add('ativa');
     }
 
-    // Atualizar data e hora
-    function atualizarHora() {
-      const agora = new Date();
-      document.getElementById('dataHoje').textContent = agora.toLocaleDateString('pt-BR');
-      document.getElementById('horaAtual').textContent = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    }
-    setInterval(atualizarHora, 1000);
+    async function salvarColaborador() {
+      const matricula = document.getElementById('matricula').value.trim();
+      const nome = document.getElementById('nome').value.trim();
+      const cpf = document.getElementById('cpf').value.trim();
+      const cargo = document.getElementById('cargo').value.trim();
+      const admissao = document.getElementById('admissao').value;
+      const setor = document.getElementById('setor').value.trim();
+      const senha = document.getElementById('senha').value;
+      const msg = document.getElementById('msgColab');
 
-    // Marcar ponto
-    async function marcarPonto() {
-      const agora = new Date();
-      const registro = {
-        matricula: usuarioLogado.matricula,
-        nome: usuarioLogado.nome,
-        data: agora.toLocaleDateString('pt-BR'),
-        horario: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-        metodo: "Manual"
-      };
-
-      const msg = document.getElementById('msgPonto');
-      const { error } = await supabase.from('registros_ponto').insert(registro);
-
-      msg.textContent = error ? "❌ Erro ao registrar ponto!" : "✅ Ponto marcado com sucesso!";
-      msg.className = error ? "msg erro" : "msg sucesso";
-      carregarHistoricoPonto();
-    }
-
-    async function carregarHistoricoPonto() {
-      const { data } = await supabase
-        .from('registros_ponto')
-        .select('*')
-        .eq('matricula', usuarioLogado.matricula)
-        .order('criado_em', {ascending: false});
-
-      document.getElementById('tabelaPonto').innerHTML = data?.map(r => `
-        <tr><td>${r.data}</td><td>${r.horario}</td><td>${r.metodo}</td></tr>
-      `).join('') || "<tr><td colspan='3'>Nenhum registro encontrado</td></tr>";
-    }
-
-    // Solicitar férias
-    async function solicitarFerias() {
-      const inicio = document.getElementById('inicioFerias').value;
-      const dias = document.getElementById('diasFerias').value;
-      const msg = document.getElementById('msgFerias');
-
-      if (!inicio || !dias) {
-        msg.textContent = "Preencha data e quantidade de dias!";
+      if (!matricula || !nome || !cpf || !senha) {
+        msg.textContent = "Preencha todos os campos obrigatórios!";
         msg.className = "msg erro";
         return;
       }
 
-      const { error } = await supabase.from('solicitacoes_ferias').insert({
-        matricula: usuarioLogado.matricula,
-        nome: usuarioLogado.nome,
-        data_inicio: inicio,
-        dias: parseInt(dias),
-        status: "Pendente"
+      const senhaHash = btoa(senha);
+
+      const { error } = await supabase.from('colaboradores').upsert({
+        matricula, nome, cpf, cargo, admissao, setor, senha_hash: senhaHash, ativo: true
       });
 
-      msg.textContent = error ? "❌ Erro ao enviar solicitação!" : "✅ Solicitação enviada!";
+      msg.textContent = error ? `Erro: ${error.message}` : "✅ Cadastro salvo com sucesso!";
       msg.className = error ? "msg erro" : "msg sucesso";
-      carregarMinhasFerias();
+      carregarColaboradores();
     }
 
-    async function carregarMinhasFerias() {
-      const { data } = await supabase
-        .from('solicitacoes_ferias')
-        .select('*')
-        .eq('matricula', usuarioLogado.matricula)
-        .order('criado_em', {ascending: false});
-
-      document.getElementById('tabelaFerias').innerHTML = data?.map(f => `
-        <tr><td>${f.data_inicio}</td><td>${f.dias}</td><td class="status ${f.status === 'Pendente' ? 'pendente' : f.status === 'Aprovado' ? 'aprovado' : 'recusado'}">${f.status}</td></tr>
-      `).join('') || "<tr><td colspan='3'>Nenhuma solicitação</td></tr>";
+    async function carregarColaboradores() {
+      const { data } = await supabase.from('colaboradores').select('*').order('matricula');
+      document.getElementById('listaColab').innerHTML = data?.map(c => `
+        <tr>
+          <td>${c.matricula}</td>
+          <td>${c.nome}</td>
+          <td>${c.cargo || '-'}</td>
+          <td>${c.setor || '-'}</td>
+          <td class="status ${c.ativo ? 'aprovado' : 'recusado'}">${c.ativo ? 'Ativo' : 'Inativo'}</td>
+        </tr>
+      `).join('') || "<tr><td colspan='5'>Nenhum cadastro encontrado</td></tr>";
     }
 
-    // Enviar atestado
-    async function enviarAtestado() {
-      const descricao = document.getElementById('descricaoAtestado').value.trim();
-      const msg = document.getElementById('msgAtestado');
+    async function carregarPonto() {
+      const { data } = await supabase.from('registros_ponto').select('*').order('criado_em', {ascending: false});
+      document.getElementById('listaPonto').innerHTML = data?.map(p => `
+        <tr><td>${p.matricula}</td><td>${p.nome}</td><td>${p.data}</td><td>${p.horario}</td><td>${p.metodo}</td></tr>
+      `).join('') || "<tr><td colspan='5'>Nenhum registro</td></tr>";
+    }
 
-      if (!descricao) {
-        msg.textContent = "Descreva o atestado antes de enviar!";
+    async function carregarFerias() {
+      const { data } = await supabase.from('solicitacoes_ferias').select('*').order('criado_em', {ascending: false});
+      document.getElementById('listaFerias').innerHTML = data?.map(f => `
+        <tr>
+          <td>${f.matricula}</td>
+          <td>${f.nome}</td>
+          <td>${f.data_inicio}</td>
+          <td>${f.dias}</td>
+          <td class="status ${f.status === 'Pendente' ? 'pendente' : f.status === 'Aprovado' ? 'aprovado' : 'recusado'}">${f.status}</td>
+          <td>
+            ${f.status === 'Pendente' ? `
+              <button onclick="alterarStatus('ferias', ${f.id}, 'Aprovado')" style="background: #10b981; margin-right: 0.3rem;">Aprovar</button>
+              <button onclick="alterarStatus('ferias', ${f.id}, 'Recusado')" style="background: #ef4444;">Recusar</button>
+            ` : '-'}
+          </td>
+        </tr>
+      `).join('') || "<tr><td colspan='6'>Nenhuma solicitação</td></tr>";
+    }
+
+    async function carregarAtestados() {
+      const { data } = await supabase.from('atestados').select('*').order('criado_em', {ascending: false});
+      document.getElementById('listaAtestados').innerHTML = data?.map(a => `
+        <tr>
+          <td>${a.matricula}</td>
+          <td>${a.nome}</td>
+          <td>${a.data_envio}</td>
+          <td>${a.descricao || '-'}</td>
+          <td class="status ${a.status === 'Pendente' ? 'pendente' : a.status === 'Aprovado' ? 'aprovado' : 'recusado'}">${a.status}</td>
+          <td>
+            ${a.status === 'Pendente' ? `
+              <button onclick="alterarStatus('atestado', ${a.id}, 'Aprovado')" style="background: #10b981; margin-right: 0.3rem;">Aprovar</button>
+              <button onclick="alterarStatus('atestado', ${a.id}, 'Recusado')" style="background: #ef4444;">Recusar</button>
+            ` : '-'}
+          </td>
+        </tr>
+      `).join('') || "<tr><td colspan='6'>Nenhum atestado</td></tr>";
+    }
+
+    async function alterarStatus(tipo, id, novoStatus) {
+      const tabela = tipo === 'ferias' ? 'solicitacoes_ferias' : 'atestados';
+      await supabase.from(tabela).update({ status: novoStatus }).eq('id', id);
+      tipo === 'ferias' ? carregarFerias() : carregarAtestados();
+    }
+
+    async function publicarComunicado() {
+      const titulo = document.getElementById('titulo').value.trim();
+      const conteudo = document.getElementById('conteudo').value.trim();
+      const msg = document.getElementById('msgComunicado');
+
+      if (!titulo || !conteudo) {
+        msg.textContent = "Preencha título e conteúdo!";
         msg.className = "msg erro";
         return;
       }
 
-      const { error } = await supabase.from('atestados').insert({
-        matricula: usuarioLogado.matricula,
-        nome: usuarioLogado.nome,
-        data_envio: new Date().toLocaleDateString('pt-BR'),
-        descricao: descricao,
-        status: "Pendente"
+      const { error } = await supabase.from('comunicados').insert({
+        titulo, conteudo, data_publicacao: new Date().toLocaleDateString('pt-BR')
       });
 
-      msg.textContent = error ? "❌ Erro ao enviar!" : "✅ Atestado enviado!";
+      msg.textContent = error ? `Erro: ${error.message}` : "✅ Comunicado publicado!";
       msg.className = error ? "msg erro" : "msg sucesso";
-      carregarMeusAtestados();
+      carregarComunicados();
     }
 
-    async function carregarMeusAtestados() {
-      const { data } = await supabase
-        .from('atestados')
-        .select('*')
-        .eq('matricula', usuarioLogado.matricula)
-        .order('criado_em', {ascending: false});
-
-      document.getElementById('tabelaAtestados').innerHTML = data?.map(a => `
-        <tr><td>${a.data_envio}</td><td>${a.descricao}</td><td class="status ${a.status === 'Pendente' ? 'pendente' : a.status === 'Aprovado' ? 'aprovado' : 'recusado'}">${a.status}</td></tr>
-      `).join('') || "<tr><td colspan='3'>Nenhum atestado enviado</td></tr>";
-    }
-
-    // Dados cadastrais
-    async function carregarDadosCadastrais() {
-      document.getElementById('dadosCadastrais').innerHTML = `
-        <p style="margin: 0.6rem 0;"><strong>Matrícula:</strong> ${usuarioLogado.matricula}</p>
-        <p style="margin: 0.6rem 0;"><strong>Nome completo:</strong> ${usuarioLogado.nome}</p>
-        <p style="margin: 0.6rem 0;"><strong>CPF:</strong> ${usuarioLogado.cpf}</p>
-        <p style="margin: 0.6rem 0;"><strong>Cargo:</strong> ${usuarioLogado.cargo || '-'}</p>
-        <p style="margin: 0.6rem 0;"><strong>Setor:</strong> ${usuarioLogado.setor || '-'}</p>
-        <p style="margin: 0.6rem 0;"><strong>Data de admissão:</strong> ${usuarioLogado.admissao || '-'}</p>
-      `;
-    }
-
-    // Comunicados
     async function carregarComunicados() {
       const { data } = await supabase.from('comunicados').select('*').order('criado_em', {ascending: false});
       document.getElementById('listaComunicados').innerHTML = data?.map(c => `
-        <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem; background: #f8fafc;">
-          <h4 style="color: var(--primary); margin-bottom: 0.4rem;">${c.titulo}</h4>
-          <p style="font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem;">Publicado em: ${c.data_publicacao}</p>
+        <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 1rem; background: #f8fafc;">
+          <h4 style="color: #2563eb; margin-bottom: 0.4rem;">${c.titulo}</h4>
+          <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">Publicado em: ${c.data_publicacao}</p>
           <p>${c.conteudo}</p>
         </div>
-      `).join('') || "<p>Nenhum comunicado disponível</p>";
+      `).join('') || "<p>Nenhum comunicado cadastrado</p>";
     }
 
-    // Carrega tudo após login
-    function carregarTodosDados() {
-      carregarHistoricoPonto();
-      carregarMinhasFerias();
-      carregarMeusAtestados();
-      carregarDadosCadastrais();
-      carregarComunicados();
-    }
+    window.onload = carregarColaboradores;
   </script>
 </body>
 </html>
