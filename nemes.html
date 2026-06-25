@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Ponto Nemes</title>
+  <style>
+    :root {
+      --primary: #2563eb; --background: #ffffff; --foreground: #0f172a;
+      --muted: #f1f5f9; --muted-foreground: #64748b; --border: #e2e8f0;
+      --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --radius: 0.5rem;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, system-ui, sans-serif; }
+    body { background:rgba(241,245,249,0.2); color:var(--foreground); line-height:1.5; }
+    .page { display:none; } .page.active { display:block; }
+    header { position:sticky; top:0; height:3rem; border-bottom:1px solid var(--border); background:var(--background); padding:0 1rem; display:flex; align-items:center; justify-content:space-between; z-index:20; }
+    header span { font-weight:600; font-size:1.125rem; }
+    .status-conexao { font-size:0.8rem; padding:0.2rem 0.6rem; border-radius:9999px; font-weight:500; }
+    .conectado { background:var(--success); color:white; }
+    .desconectado { background:var(--warning); color:white; }
+    main { padding:1rem; max-width:1200px; margin:0 auto; }
+    h1 { font-size:1.5rem; font-weight:bold; margin:0.5rem 0; }
+    h3 { font-weight:600; font-size:1.125rem; margin:0.75rem 0; }
+    .text-muted { color:var(--muted-foreground); font-size:0.875rem; }
+    .grid { display:grid; gap:1.5rem; margin:2rem 0; }
+    @media(min-width:768px){.grid{grid-template-columns:repeat(2,1fr);}}
+    @media(min-width:1024px){.grid{grid-template-columns:repeat(3,1fr);}}
+    .card { background:var(--background); padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.05); cursor:pointer; transition:box-shadow 0.2s; }
+    .card:hover { box-shadow:0 4px 6px rgba(0,0,0,0.07); }
+    .back-link { color:var(--muted-foreground); font-size:0.875rem; text-decoration:none; margin-bottom:1rem; display:inline-block; }
+    .back-link:hover { color:var(--primary); }
+    .box { background:var(--background); padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.05); margin-bottom:1.5rem; }
+    .info-row { margin-bottom:0.75rem; font-size:0.95rem; }
+    .biometria-box { background:rgba(37,99,235,0.05); border:1px solid rgba(37,99,235,0.2); border-radius:var(--radius); padding:0.75rem; margin-bottom:1.5rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; }
+    button { border:none; border-radius:var(--radius); padding:0.5rem 1rem; font-weight:500; cursor:pointer; transition:background 0.2s; font-size:0.95rem; }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-primary:hover { background:rgba(37,99,235,0.9); }
+    .btn-large { width:100%; max-width:280px; padding:1rem; font-size:1.125rem; font-weight:600; }
+    .msg { padding:0.75rem; border-radius:var(--radius); margin-top:1rem; font-size:0.9rem; display:none; }
+    .msg.success { background:rgba(16,185,129,0.15); color:#047857; display:block; }
+    .msg.warning { background:rgba(245,158,11,0.15); color:#92400e; display:block; }
+    .msg.danger { background:rgba(239,68,68,0.15); color:#991b1b; display:block; }
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; margin-top:1rem; }
+    th, td { padding:0.75rem; text-align:left; border-bottom:1px solid var(--border); }
+    th { font-weight:600; color:var(--muted-foreground); }
+    input { width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:var(--radius); font-size:0.95rem; margin-bottom:0.75rem; }
+    .text-green { color:var(--success); font-weight:500; }
+    .text-yellow { color:var(--warning); font-weight:500; }
+    .text-red { color:var(--danger); font-weight:500; }
+  </style>
+
+  <!-- Biblioteca Supabase -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.0/+esm'
+
+    // ✅ SEUS DADOS JÁ INSERIDOS
+    const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
+
+    window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
+</head>
+<body>
+  <div class="flex min-h-screen flex-col">
+    <header>
+      <span>Nemes</span>
+      <div id="status-conexao" class="status-conexao">Verificando...</div>
+    </header>
+
+    <main>
+      <div id="inicio" class="page active">
+        <h1>Bem-vindo!</h1>
+        <p class="text-muted">Acesse seus serviços abaixo</p>
+        <div class="grid">
+          <div class="card" onclick="irPara('meu-ponto')">
+            <h3>Controle de Ponto</h3>
+            <p class="text-muted">Marque e consulte seus horários</p>
+          </div>
+          <div class="card" onclick="irPara('meu-holerites')">
+            <h3>Holerites</h3>
+            <p class="text-muted">Consulte e baixe recibos</p>
+          </div>
+          <div class="card" onclick="irPara('meu-ferias')">
+            <h3>Férias</h3>
+            <p class="text-muted">Solicite e acompanhe</p>
+          </div>
+          <div class="card" onclick="irPara('meu-dados')">
+            <h3>Meus Dados</h3>
+            <p class="text-muted">Dados cadastrais</p>
+          </div>
+          <div class="card" onclick="irPara('meu-atestados')">
+            <h3>Atestados</h3>
+            <p class="text-muted">Envie e acompanhe</p>
+          </div>
+          <div class="card" onclick="irPara('meu-comunicados')">
+            <h3>Comunicados</h3>
+            <p class="text-muted">Leia avisos oficiais</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="meu-ponto" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Controle de Ponto</h1>
+        <div class="box">
+          <div class="info-row">Data: <strong id="data-hoje"></strong></div>
+          <div class="info-row">Horário: <strong id="hora-atual"></strong></div>
+          <div class="biometria-box">
+            <span>🔐 Biometria:</span>
+            <button class="btn-primary" onclick="cadastrarBiometria()">Cadastrar Digital</button>
+            <span id="status-biometria" class="text-muted"></span>
+          </div>
+          <div class="flex justify-center mb-3">
+            <button class="btn-primary btn-large" onclick="marcarPonto()">🕒 Marcar Ponto</button>
+          </div>
+          <div id="msg-ponto" class="msg"></div>
+        </div>
+        <div class="box">
+          <h3>Histórico de Registros</h3>
+          <table>
+            <thead>
+              <tr><th>Data</th><th>Horário</th><th>Método</th><th>Status</th></tr>
+            </thead>
+            <tbody id="tabela-ponto"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="meu-holerites" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Holerites</h1>
+        <div class="box">
+          <div class="flex justify-between items-center border p-3 rounded mb-3">
+            <span>Junho/2026</span>
+            <button class="btn-primary" onclick="baixar()">Baixar PDF</button>
+          </div>
+          <div class="flex justify-between items-center border p-3 rounded">
+            <span>Maio/2026</span>
+            <button class="btn-primary" onclick="baixar()">Baixar PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="meu-ferias" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Solicitação de Férias</h1>
+        <div class="grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="box">
+            <h3>Disponibilidade</h3>
+            <p class="mb-3">Período: 01/05/2025 a 30/04/2026</p>
+            <p class="text-green font-medium">30 dias disponíveis</p>
+            <div class="mt-4 pt-3 border-t">
+              <h4 class="text-sm font-medium mb-2">Minhas solicitações:</h4>
+              <div id="lista-ferias"></div>
+            </div>
+          </div>
+          <div class="box">
+            <h3>Solicitar</h3>
+            <label class="block text-sm mb-2">Início: <input type="date" id="inicio-ferias"></label>
+            <label class="block text-sm mb-3">Dias: <input type="number" id="dias-ferias" min="5" max="30"></label>
+            <button class="btn-primary w-full" onclick="solicitarFerias()">Enviar</button>
+            <div id="msg-ferias" class="msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="meu-dados" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Meus Dados</h1>
+        <div class="box" id="dados-colab"></div>
+      </div>
+
+      <div id="meu-atestados" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Atestados</h1>
+        <div class="box">
+          <h3>Enviar Novo</h3>
+          <input type="file" id="arquivo-atestado" accept=".pdf, image/*" class="mb-3">
+          <button class="btn-primary" onclick="enviarAtestado()">Enviar</button>
+          <div id="msg-atestado" class="msg"></div>
+        </div>
+        <div class="box">
+          <h3>Meus Atestados</h3>
+          <div id="lista-atestados"></div>
+        </div>
+      </div>
+
+      <div id="meu-comunicados" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Comunicados Oficiais</h1>
+        <div class="box" id="lista-comunicados"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const usuarioLogado = { nome: "Maria Silva", id: 1 };
+
+    function salvarLocal(chave, dados) {
+      localStorage.setItem(chave, JSON.stringify(dados));
+    }
+    function carregarLocal(chave, padrao = []) {
+      const dados = localStorage.getItem(chave);
+      return dados ? JSON.parse(dados) : padrao;
+    }
+
+    function atualizarStatusConexao() {
+      const el = document.getElementById('status-conexao');
+      if (navigator.onLine) {
+        el.textContent = "Conectado";
+        el.className = "status-conexao conectado";
+        sincronizarPendentes();
+      } else {
+        el.textContent = "Sem internet";
+        el.className = "status-conexao desconectado";
+      }
+    }
+    window.addEventListener('online', atualizarStatusConexao);
+    window.addEventListener('offline', atualizarStatusConexao);
+
+    function irPara(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'meu-ponto') { atualizarDataHora(); carregarPonto(); }
+      if (id === 'meu-dados') carregarDados();
+      if (id === 'meu-ferias') listarFerias();
+      if (id === 'meu-atestados') listarAtestados();
+      if (id === 'meu-comunicados') listarComunicados();
+    }
+
+    function atualizarDataHora() {
+      const agora = new Date();
+      document.getElementById('data-hoje').textContent = agora.toLocaleDateString('pt-BR');
+      document.getElementById('hora-atual').textContent = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    }
+    setInterval(atualizarDataHora, 1000);
+
+    async function marcarPonto() {
+      const agora = new Date();
+      const registro = {
+        nome: usuarioLogado.nome,
+        data: agora.toLocaleDateString('pt-BR'),
+        horario: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
+        metodo: "Manual",
+        timestamp: agora.toISOString()
+      };
+
+      const msg = document.getElementById('msg-ponto');
+
+      if (!navigator.onLine) {
+        const pendentes = carregarLocal('pontosPendentes');
+        pendentes.push(registro);
+        salvarLocal('pontosPendentes', pendentes);
+        msg.textContent = "✅ Ponto marcado! Salvo sem internet, enviará quando conectar.";
+        msg.classList.add("warning");
+        setTimeout(() => msg.classList.remove("warning"), 4000);
+        carregarPonto();
+        return;
+      }
+
+      try {
+        const { error } = await supabase.from('registros_ponto').insert({
+          nome: registro.nome,
+          data: registro.data,
+          horario: registro.horario,
+          metodo: registro.metodo
+        });
+
+        if (error) throw error;
+
+        msg.textContent = "✅ Ponto marcado e registrado no sistema!";
+        msg.classList.add("success");
+      } catch (erro) {
+        console.error("Erro ao salvar:", erro);
+        const pendentes = carregarLocal('pontosPendentes');
+        pendentes.push(registro);
+        salvarLocal('pontosPendentes', pendentes);
+        msg.textContent = "⚠️ Problema na conexão. Ponto salvo localmente.";
+        msg.classList.add("warning");
+      }
+
+      setTimeout(() => msg.classList.remove("success", "warning"), 3500);
+      carregarPonto();
+    }
+
+    async function sincronizarPendentes() {
+      const pendentes = carregarLocal('pontosPendentes');
+      if (pendentes.length === 0) return;
+
+      let enviados = [];
+      for (const reg of pendentes) {
+        try {
+          const { error } = await supabase.from('registros_ponto').insert({
+            nome: reg.nome,
+            data: reg.data,
+            horario: reg.horario,
+            metodo: reg.metodo
+          });
+          if (!error) enviados.push(reg.timestamp);
+        } catch {}
+      }
+
+      const restantes = pendentes.filter(p => !enviados.includes(p.timestamp));
+      salvarLocal('pontosPendentes', restantes);
+
+      if (enviados.length > 0) {
+        const msg = document.getElementById('msg-ponto');
+        msg.textContent = `✅ ${enviados.length} registro(s) enviados!`;
+        msg.classList.add("success");
+        setTimeout(() => msg.classList.remove("success"), 3000);
+        carregarPonto();
+      }
+    }
+
+    async function carregarPonto() {
+      const tbody = document.getElementById('tabela-ponto');
+      tbody.innerHTML = '';
+
+      const pendentes = carregarLocal('pontosPendentes');
+      pendentes.forEach(r => {
+        tbody.innerHTML += `<tr><td>${r.data}</td><td>${r.horario}</td><td>${r.metodo}</td><td><span class="text-yellow">Aguardando envio</span></td></tr>`;
+      });
+
+      if (navigator.onLine) {
+        try {
+          const { data, error } = await supabase.from('registros_ponto')
+            .select('*')
+            .eq('nome', usuarioLogado.nome)
+            .order('criado_em', {ascending: false});
+
+          if (!error && data) {
+            data.forEach(r => {
+              tbody.innerHTML += `<tr><td>${r.data}</td><td>${r.horario}</td><td>${r.metodo}</td><td><span class="text-green">Registrado</span></td></tr>`;
+            });
+          }
+        } catch (erro) {
+          console.error("Erro ao carregar:", erro);
+        }
+      }
+
+      if (tbody.innerHTML === '') {
+        tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado</td></tr>";
+      }
+    }
+
+    async function carregarDados() {
+      if (!navigator.onLine) {
+        document.getElementById('dados-colab').innerHTML = "<p class='text-muted'>Sem conexão para carregar dados.</p>";
+        return;
+      }
+      const { data } = await supabase.from('colaboradores').select('*').eq('nome', usuarioLogado.nome).single();
+      document.getElementById('dados-colab').innerHTML = data ? `
+        <p><strong>Nome:</strong> ${data.nome}</p>
+        <p><strong>CPF:</strong> ${data.cpf}</p>
+        <p><strong>Cargo:</strong> ${data.cargo}</p>
+        <p><strong>Admissão:</strong> ${data.admissao}</p>
+        <p><strong>Setor:</strong> ${data.setor}</p>
+        <p><strong>Status:</strong> <span class="text-green">${data.status}</span></p>
+      ` : "<p>Dados não encontrados</p>";
+    }
+
+    async function solicitarFerias() {
+      if (!navigator.onLine) { alert("⚠️ Sem internet!"); return; }
+      const inicio = document.getElementById('inicio-ferias').value;
+      const dias = document.getElementById('dias-ferias').value;
+      if (!inicio || !dias) return alert("Preencha todos os campos!");
+      const { error } = await supabase.from('solicitacoes_ferias').insert({ nome: usuarioLogado.nome, inicio: new Date(inicio).toLocaleDateString('pt-BR'), dias: parseInt(dias) });
+      const msg = document.getElementById('msg-ferias');
+      msg.textContent = error ? "❌ Erro!" : "✅ Solicitação enviada!";
+      msg.classList.add(error ? "danger" : "success");
+      setTimeout(() => msg.classList.remove("success", "danger"), 3000);
+      listarFerias();
+    }
+
+    async function listarFerias() {
+      if (!navigator.onLine) { document.getElementById('lista-ferias').innerHTML = "<p>Sem conexão</p>"; return; }
+      const { data } = await supabase.from('solicitacoes_ferias').select('*').eq('nome', usuarioLogado.nome).order('criado_em', {ascending:false});
+      document.getElementById('lista-ferias').innerHTML = data?.map(f => `<p>Início: ${f.inicio} | ${f.dias} dias | <span class="${f.status === 'Aprovado' ? 'text-green' : f.status === 'Recusado' ? 'text-red' : 'text-yellow'}">${f.status}</span></p>`).join('') || "<p>Nenhuma solicitação</p>";
+    }
+
+    async function enviarAtestado() {
+      if (!navigator.onLine) { alert("⚠️ Sem internet!"); return; }
+      const arquivo = document.getElementById('arquivo-atestado').files[0];
+      if (!arquivo) return alert("Selecione o arquivo!");
+      const leitor = new FileReader();
+      leitor.onload = async e => {
+        const { error } = await supabase.from('atestados').insert({ nome: usuarioLogado.nome, nome_arquivo: arquivo.name, data_envio: new Date().toLocaleDateString('pt-BR'), arquivo: e.target.result });
+        alert(error ? "Erro!" : "Atestado enviado!");
+        listarAtestados();
+      };
+      leitor.readAsDataURL(arquivo);
+    }
+
+    async function listarAtestados() {
+      if (!navigator.onLine) { document.getElementById('lista-atestados').innerHTML = "<p>Sem conexão</p>"; return; }
+      const { data } = await supabase.from('atestados').select('*').eq('nome', usuarioLogado.nome).order('criado_em', {ascending:false});
+      document.getElementById('lista-atestados').innerHTML = data?.map(a => `<p>${a.nome_arquivo} | ${a.data_envio} | <span class="${a.status === 'Aprovado' ? 'text-green' : a.status === 'Recusado' ? 'text-red' : 'text-yellow'}">${a.status}</span></p>`).join('') || "<p>Nenhum atestado</p>";
+    }
+
+    async function listarComunicados() {
+      if (!navigator.onLine) { document.getElementById('lista-comunicados').innerHTML = "<p>Sem conexão</p>"; return; }
+      const { data } = await supabase.from('comunicados').select('*').order('criado_em', {ascending:false});
+      document.getElementById('lista-comunicados').innerHTML = data?.map(c => `<div><h4>${c.titulo}</h4><p class="text-muted">${c.data}</p><p>${c.conteudo}</p></div>`).join('') || "<p>Nenhum comunicado</p>";
+    }
+
+    function baixar() { alert("Baixando holerite..."); }
+    function cadastrarBiometria() { alert("Função de biometria disponível!"); }
+
+    window.onload = () => {
+      atualizarDataHora();
+      atualizarStatusConexao();
+    };
+  </script>
+</body>
+</html>
