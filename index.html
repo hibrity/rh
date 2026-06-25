@@ -1,1 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RH Digital - Sistema de Gestão</title>
+  <style>
+    :root {
+      --primary: #2563eb; --background: #ffffff; --foreground: #0f172a;
+      --muted: #f1f5f9; --muted-foreground: #64748b; --border: #e2e8f0;
+      --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --radius: 0.5rem;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:Inter, system-ui, sans-serif; }
+    body { background:rgba(241,245,249,0.2); color:var(--foreground); line-height:1.5; }
+    .page { display:none; } .page.active { display:block; }
+    header { position:sticky; top:0; height:3rem; border-bottom:1px solid var(--border); background:var(--background); padding:0 1rem; display:flex; align-items:center; justify-content:space-between; z-index:20; }
+    header span { font-weight:600; font-size:1.125rem; }
+    .status-conexao { font-size:0.8rem; padding:0.2rem 0.6rem; border-radius:9999px; font-weight:500; }
+    .conectado { background:var(--success); color:white; }
+    .desconectado { background:var(--warning); color:white; }
+    main { padding:1rem; max-width:1200px; margin:0 auto; }
+    h1 { font-size:1.5rem; font-weight:bold; margin:0.5rem 0; }
+    h3 { font-weight:600; font-size:1.125rem; margin:0.75rem 0; }
+    .text-muted { color:var(--muted-foreground); font-size:0.875rem; }
+    .grid { display:grid; gap:1.5rem; margin:2rem 0; }
+    @media(min-width:768px){.grid{grid-template-columns:repeat(2,1fr);}}
+    @media(min-width:1024px){.grid{grid-template-columns:repeat(3,1fr);}}
+    .card { background:var(--background); padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.05); cursor:pointer; transition:box-shadow 0.2s; }
+    .card:hover { box-shadow:0 4px 6px rgba(0,0,0,0.07); }
+    .back-link { color:var(--muted-foreground); font-size:0.875rem; text-decoration:none; margin-bottom:1rem; display:inline-block; }
+    .back-link:hover { color:var(--primary); }
+    .box { background:var(--background); padding:1.5rem; border-radius:var(--radius); border:1px solid var(--border); box-shadow:0 1px 2px rgba(0,0,0,0.05); margin-bottom:1.5rem; }
+    button { border:none; border-radius:var(--radius); padding:0.5rem 1rem; font-weight:500; cursor:pointer; transition:background 0.2s; font-size:0.95rem; }
+    .btn-primary { background:var(--primary); color:white; }
+    .btn-success { background:var(--success); color:white; }
+    .btn-danger { background:var(--danger); color:white; }
+    table { width:100%; border-collapse:collapse; font-size:0.875rem; margin-top:1rem; }
+    th, td { padding:0.75rem; text-align:left; border-bottom:1px solid var(--border); }
+    th { font-weight:600; color:var(--muted-foreground); }
+    input, textarea { width:100%; padding:0.5rem; border:1px solid var(--border); border-radius:var(--radius); font-size:0.95rem; margin-bottom:0.75rem; }
+    .text-green { color:var(--success); font-weight:500; }
+    .text-yellow { color:var(--warning); font-weight:500; }
+    .text-red { color:var(--danger); font-weight:500; }
+    .linha-pendente { display:flex; justify-content:space-between; align-items:center; padding:0.75rem; border:1px solid var(--border); border-radius:var(--radius); margin-bottom:0.5rem; }
+  </style>
 
+  <!-- Biblioteca Supabase -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.0/+esm'
+
+    // ✅ MESMOS DADOS DO SEU PROJETO
+    const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
+
+    window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  </script>
+</head>
+<body>
+  <div class="flex min-h-screen flex-col">
+    <header>
+      <span>Painel RH</span>
+      <div id="status-conexao" class="status-conexao">Verificando...</div>
+    </header>
+
+    <main>
+      <div id="inicio" class="page active">
+        <h1>Painel de Gestão</h1>
+        <p class="text-muted">Controle completo dos colaboradores</p>
+        <div class="grid">
+          <div class="card" onclick="irPara('colaboradores')"><h3>👥 Colaboradores</h3><p>Cadastro e dados</p></div>
+          <div class="card" onclick="irPara('ponto')"><h3>🕒 Controle de Ponto</h3><p>Visualizar marcações</p></div>
+          <div class="card" onclick="irPara('ferias')"><h3>🏖️ Férias</h3><p>Aprovar solicitações</p></div>
+          <div class="card" onclick="irPara('atestados')"><h3>📄 Atestados</h3><p>Analisar envios</p></div>
+          <div class="card" onclick="irPara('comunicados')"><h3>📢 Comunicados</h3><p>Publicar avisos</p></div>
+        </div>
+      </div>
+
+      <div id="colaboradores" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Cadastro de Colaboradores</h1>
+        <div class="box">
+          <input type="text" id="nome" placeholder="Nome completo">
+          <input type="text" id="cpf" placeholder="CPF">
+          <input type="text" id="cargo" placeholder="Cargo">
+          <input type="date" id="admissao">
+          <input type="text" id="setor" placeholder="Setor">
+          <button class="btn-primary" onclick="cadastrarColaborador()">Salvar Cadastro</button>
+        </div>
+        <div class="box"><h3>Lista de Colaboradores</h3><table><thead><tr><th>Nome</th><th>CPF</th><th>Cargo</th><th>Admissão</th><th>Setor</th></tr></thead><tbody id="lista-colab"></tbody></table></div>
+      </div>
+
+      <div id="ponto" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Marcações de Ponto</h1>
+        <div class="box"><table><thead><tr><th>Nome</th><th>Data</th><th>Horário</th><th>Método</th><th>Registrado em</th></tr></thead><tbody id="lista-ponto"></tbody></table></div>
+      </div>
+
+      <div id="ferias" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Solicitações de Férias</h1>
+        <div class="box" id="lista-ferias-rh"></div>
+      </div>
+
+      <div id="atestados" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Atestados Recebidos</h1>
+        <div class="box" id="lista-atestados-rh"></div>
+      </div>
+
+      <div id="comunicados" class="page">
+        <a href="#" class="back-link" onclick="irPara('inicio');return false;">← Voltar</a>
+        <h1>Publicar Comunicado</h1>
+        <div class="box">
+          <input type="text" id="titulo" placeholder="Título do aviso">
+          <textarea id="conteudo" rows="3" placeholder="Texto do comunicado"></textarea>
+          <button class="btn-primary" onclick="publicarComunicado()">Publicar</button>
+        </div>
+        <div class="box"><h3>Últimos Comunicados</h3><div id="lista-comunicados-rh"></div></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // --- Verificar conexão ---
+    function atualizarStatusConexao() {
+      const el = document.getElementById('status-conexao');
+      el.textContent = navigator.onLine ? "Conectado" : "Sem internet";
+      el.className = navigator.onLine ? "status-conexao conectado" : "status-conexao desconectado";
+    }
+    window.addEventListener('online', atualizarStatusConexao);
+    window.addEventListener('offline', atualizarStatusConexao);
+
+    // --- Navegação ---
+    function irPara(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'colaboradores') listarColaboradores();
+      if (id === 'ponto') listarPonto();
+      if (id === 'ferias') listarFeriasRH();
+      if (id === 'atestados') listarAtestadosRH();
+      if (id === 'comunicados') listarComunicadosRH();
+    }
+
+    // --- Colaboradores ---
+    async function cadastrarColaborador() {
+      const dados = {
+        nome: document.getElementById('nome').value.trim(),
+        cpf: document.getElementById('cpf').value.trim(),
+        cargo: document.getElementById('cargo').value.trim(),
+        admissao: document.getElementById('admissao').value,
+        setor: document.getElementById('setor').value.trim()
+      };
+      if (!dados.nome || !dados.cpf) return alert("Preencha nome e CPF!");
+      const { error } = await supabase.from('colaboradores').insert(dados);
+      alert(error ? "Erro: " + error.message : "✅ Cadastrado com sucesso!");
+      listarColaboradores();
+    }
+
+    async function listarColaboradores() {
+      const { data } = await supabase.from('colaboradores').select('*').order('nome');
+      document.getElementById('lista-colab').innerHTML = data?.map(c => `<tr><td>${c.nome}</td><td>${c.cpf}</td><td>${c.cargo || '-'}</td><td>${c.admissao || '-'}</td><td>${c.setor || '-'}</td></tr>`).join('') || "<tr><td colspan='5'>Nenhum cadastro</td></tr>";
+    }
+
+    // --- Ponto ---
+    async function listarPonto() {
+      const { data } = await supabase.from('registros_ponto').select('*').order('criado_em', {ascending:false});
+      document.getElementById('lista-ponto').innerHTML = data?.map(r => `<tr><td>${r.nome}</td><td>${r.data}</td><td>${r.horario}</td><td>${r.metodo}</td><td>${new Date(r.criado_em).toLocaleString('pt-BR')}</td></tr>`).join('') || "<tr><td colspan='5'>Nenhum registro</td></tr>";
+    }
+
+    // --- Férias ---
+    async function listarFeriasRH() {
+      const { data } = await supabase.from('solicitacoes_ferias').select('*').eq('status', 'Pendente').order('criado_em', {ascending:false});
+      document.getElementById('lista-ferias-rh').innerHTML = data?.map(f => `
+        <div class="linha-pendente">
+          <span><strong>${f.nome}</strong> | Início: ${f.inicio} | ${f.dias} dias</span>
+          <div>
+            <button class="btn-success" onclick="alterarStatus('ferias',${f.id},'Aprovado')">Aprovar</button>
+            <button class="btn-danger" onclick="alterarStatus('ferias',${f.id},'Recusado')">Recusar</button>
+          </div>
+        </div>`).join('') || "<p>Nenhuma solicitação pendente</p>";
+    }
+
+    // --- Atestados ---
+    async function listarAtestadosRH() {
+      const { data } = await supabase.from('atestados').select('*').eq('status', 'Pendente').order('criado_em', {ascending:false});
+      document.getElementById('lista-atestados-rh').innerHTML = data?.map(a => `
+        <div class="linha-pendente">
+          <span><strong>${a.nome}</strong> | Arquivo: ${a.nome_arquivo} | ${a.data_envio}</span>
+          <div>
+            <button class="btn-success" onclick="alterarStatus('atestado',${a.id},'Aprovado')">Aprovar</button>
+            <button class="btn-danger" onclick="alterarStatus('atestado',${a.id},'Recusado')">Recusar</button>
+          </div>
+        </div>`).join('') || "<p>Nenhum atestado pendente</p>";
+    }
+
+    async function alterarStatus(tipo, id, status) {
+      const tabela = tipo === 'ferias' ? 'solicitacoes_ferias' : 'atestados';
+      await supabase.from(tabela).update({status}).eq('id', id);
+      irPara(tipo === 'ferias' ? 'ferias' : 'atestados');
+    }
+
+    // --- Comunicados ---
+    async function publicarComunicado() {
+      const titulo = document.getElementById('titulo').value.trim();
+      const conteudo = document.getElementById('conteudo').value.trim();
+      if (!titulo || !conteudo) return alert("Preencha título e conteúdo!");
+      await supabase.from('comunicados').insert({ titulo, conteudo, data: new Date().toLocaleDateString('pt-BR') });
+      alert("✅ Comunicado publicado!");
+      listarComunicadosRH();
+    }
+
+    async function listarComunicadosRH() {
+      const { data } = await supabase.from('comunicados').select('*').order('criado_em', {ascending:false});
+      document.getElementById('lista-comunicados-rh').innerHTML = data?.map(c => `<div style="margin-bottom:1rem; padding:0.75rem; border-radius:var(--radius); background:var(--muted);"><h4>${c.titulo}</h4><p class="text-muted">${c.data}</p><p>${c.conteudo}</p></div>`).join('') || "<p>Nenhum comunicado cadastrado</p>";
+    }
+
+    window.onload = atualizarStatusConexao;
+  </script>
+</body>
+</html>
