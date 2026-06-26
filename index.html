@@ -1,440 +1,571 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sisgespe - Painel RH</title>
-  <style>
-    :root {
-      --primary: #1e40af;
-      --secundary: #3b82f6;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --sucesso: #10b981;
-      --alerta: #f59e0b;
-      --erro: #ef4444;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background: var(--bg); color: var(--text); line-height: 1.6; }
-    header {
-      background: var(--primary);
-      color: #fff;
-      padding: 1.2rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .container {
-      max-width: 1100px;
-      margin: 1.5rem auto;
-      padding: 0 1.2rem;
-    }
-    .card {
-      background: var(--card);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-    h2 {
-      color: var(--primary);
-      margin-bottom: 1rem;
-      font-size: 1.2rem;
-      border-left: 4px solid var(--secundary);
-      padding-left: 0.7rem;
-    }
-    input, select, textarea {
-      width: 100%;
-      padding: 0.75rem;
-      margin: 0.5rem 0 1rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 0.95rem;
-    }
-    button {
-      padding: 0.75rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      background: var(--secundary);
-      color: #fff;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover { background: var(--primary); }
-    .btn-sair { background: #be123c; padding: 0.5rem 1rem; }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 0.8rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    th { background: #f8fafc; font-weight: 600; }
-    .status { font-weight: bold; }
-    .pendente { color: var(--alerta); }
-    .aprovado { color: var(--sucesso); }
-    .recusado { color: var(--erro); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sisgespe - Gestão RH</title>
+    <style>
+        :root {
+            --primario: #165DFF;
+            --sucesso: #00B42A;
+            --alerta: #FF7D00;
+            --erro: #F53F3F;
+            --cinza: #86909C;
+            --fundo: #F5F7FA;
+            --branco: #FFFFFF;
+            --borda: #E5E6EB;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: var(--fundo); color: #1D2129; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-    /* ✅ Ajustes para celular */
-    @media (max-width: 768px) {
-      .container { padding: 0 1rem; }
-      table { display: block; overflow-x: auto; }
-      .grid { grid-template-columns: 1fr; }
-      header { padding: 1rem; flex-direction: column; align-items: flex-start; }
-    }
-  </style>
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.0/+esm'
-    const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
-    window.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-  </script>
+        /* Tela de Login */
+        #tela-login { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #165DFF, #0E42C4); }
+        .card-login { background: var(--branco); padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); width: 100%; max-width: 360px; text-align: center; }
+        .card-login h2 { margin-bottom: 24px; color: var(--primario); }
+        .card-login input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--borda); border-radius: 6px; font-size: 16px; }
+        .card-login button { width: 100%; padding: 12px; background: var(--primario); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .erro { color: var(--erro); margin-top: 12px; display: none; }
+
+        /* Painel Principal */
+        #painel { display: none; }
+        header { background: var(--primario); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
+        .btn-sair { background: var(--erro); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .menu-item { background: var(--branco); padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 1px solid var(--borda); transition: all 0.2s; }
+        .menu-item:hover { transform: translateY(-3px); border-color: var(--primario); }
+        .menu-item h3 { color: var(--primario); margin-bottom: 8px; font-size: 16px; }
+
+        .aba { display: none; background: var(--branco); padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .aba.ativa { display: block; }
+        .aba h2 { color: var(--primario); margin-bottom: 20px; border-bottom: 2px solid var(--borda); padding-bottom: 10px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .campo { display: flex; flex-direction: column; }
+        .campo label { font-size: 14px; margin-bottom: 6px; color: #4E5969; }
+        .campo input, .campo select, .campo textarea { padding: 10px; border: 1px solid var(--borda); border-radius: 6px; font-size: 15px; }
+
+        .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 8px; margin-bottom: 8px; }
+        .btn-primario { background: var(--primario); color: white; }
+        .btn-sucesso { background: var(--sucesso); color: white; }
+        .btn-alerta { background: var(--alerta); color: white; }
+        .btn-erro { background: var(--erro); color: white; }
+        .btn-cinza { background: var(--cinza); color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--borda); }
+        th { background: #F9FAFB; font-weight: bold; color: #4E5969; }
+        .acoes { display: flex; gap: 6px; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header>
-  <h1>Sisgespe — Painel RH</h1>
-  <button class="btn-sair" onclick="sair()">Sair</button>
-</header>
-
-<div class="container">
-  <!-- Cadastro de Colaborador -->
-  <section class="card">
-    <h2>Cadastrar Colaborador</h2>
-    <div class="grid">
-      <input type="text" id="c_nome" placeholder="Nome completo">
-      <input type="text" id="c_matricula" placeholder="Matrícula">
-      <input type="text" id="c_cpf" placeholder="CPF">
-      <input type="password" id="c_senha" placeholder="Senha">
-      <input type="text" id="c_cargo" placeholder="Cargo">
-      <input type="text" id="c_setor" placeholder="Setor">
-      <input type="date" id="c_admissao">
+<!-- Tela de Login -->
+<div id="tela-login">
+    <div class="card-login">
+        <h2>Sisgespe RH</h2>
+        <input type="password" id="senha" placeholder="Digite a senha mestra">
+        <button onclick="entrar()">Acessar Sistema</button>
+        <div id="aviso-erro" class="erro">Senha incorreta! Tente novamente.</div>
     </div>
-    <button onclick="cadastrarColaborador()">Cadastrar</button>
-  </section>
+</div>
 
-  <!-- Registros de Ponto -->
-  <section class="card">
-    <h2>Registros de Ponto — Entrada / Saída</h2>
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
-      <input type="text" id="filtro_mat" placeholder="Filtrar por matrícula">
-      <button onclick="carregarPontos()">Filtrar</button>
+<!-- Painel Principal -->
+<div id="painel" class="container">
+    <header>
+        <h1>Sisgespe - Gestão de Recursos Humanos</h1>
+        <button class="btn-sair" onclick="sair()">Sair</button>
+    </header>
+
+    <div class="menu">
+        <div class="menu-item" onclick="abrirAba('colaboradores')">
+            <h3>👥 Colaboradores</h3>
+            <p>Cadastro e dados</p>
+        </div>
+        <div class="menu-item" onclick="abrirAba('ponto')">
+            <h3>🕒 Controle de Ponto</h3>
+            <p>Marcações e espelho</p>
+        </div>
+        <div class="menu-item" onclick="abrirAba('ferias')">
+            <h3>🏖️ Férias</h3>
+            <p>Solicitações e aprovação</p>
+        </div>
+        <div class="menu-item" onclick="abrirAba('atestados')">
+            <h3>📄 Atestados</h3>
+            <p>Envios e análise</p>
+        </div>
+        <div class="menu-item" onclick="abrirAba('banco')">
+            <h3>⏱️ Banco de Horas</h3>
+            <p>Saldo e fechamento</p>
+        </div>
+        <div class="menu-item" onclick="abrirAba('comunicados')">
+            <h3>📢 Comunicados</h3>
+            <p>Avisos gerais</p>
+        </div>
     </div>
-    <table>
-      <thead>
-        <tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Entrada</th><th>Saída</th><th>Horas úteis</th><th>Método</th></tr>
-      </thead>
-      <tbody id="tabela_pontos"></tbody>
-    </table>
-  </section>
 
-  <!-- Benefícios -->
-  <section class="card">
-    <h2>⚙️ Benefícios por Colaborador</h2>
-    <div class="grid">
-      <input type="text" id="b_mat" placeholder="Matrícula">
-      <input type="number" id="vt_dia" placeholder="VT por dia R$" step="0.01">
-      <input type="number" id="vr_dia" placeholder="VR/VA por dia R$" step="0.01">
+    <!-- Aba Colaboradores -->
+    <div id="aba-colaboradores" class="aba ativa">
+        <h2>Cadastro de Colaboradores</h2>
+        <div class="form-grid">
+            <div class="campo"><label>Nome Completo</label><input type="text" id="col_nome"></div>
+            <div class="campo"><label>Matrícula</label><input type="text" id="col_matricula"></div>
+            <div class="campo"><label>CPF</label><input type="text" id="col_cpf"></div>
+            <div class="campo"><label>Cargo</label><input type="text" id="col_cargo"></div>
+            <div class="campo"><label>Setor</label><input type="text" id="col_setor"></div>
+            <div class="campo"><label>Admissão</label><input type="date" id="col_admissao"></div>
+            <div class="campo"><label>VT R$/dia</label><input type="number" step="0.01" id="col_vt"></div>
+            <div class="campo"><label>VR R$/dia</label><input type="number" step="0.01" id="col_vr"></div>
+            <div class="campo"><label>Status</label><select id="col_status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="salvarColaborador()">💾 Salvar</button>
+        <button class="btn btn-cinza" onclick="limparFormColab()">🧹 Limpar</button>
+
+        <h3 style="margin-top:24px;">Lista de Colaboradores</h3>
+        <table>
+            <thead><tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Setor</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="lista-colab"></tbody>
+        </table>
     </div>
-    <button onclick="salvarBeneficios()">💾 Salvar Configurações</button>
-  </section>
 
-  <!-- Fechamento Manual -->
-  <section class="card">
-    <h2>Fechamento Manual do Banco de Horas</h2>
-    <div class="grid">
-      <input type="text" id="b_matricula" placeholder="Matrícula">
-      <input type="number" id="b_mes" placeholder="Mês" min="1" max="12">
-      <input type="number" id="b_ano" placeholder="Ano" min="2024" max="2050">
-      <input type="number" id="b_saldo" placeholder="Saldo final (horas)" step="0.01">
+    <!-- Aba Ponto -->
+    <div id="aba-ponto" class="aba">
+        <h2>Controle de Ponto</h2>
+        <div class="form-grid">
+            <div class="campo"><label>Matrícula</label><input type="text" id="ponto_matricula"></div>
+            <div class="campo"><label>Data</label><input type="date" id="ponto_data"></div>
+            <div class="campo"><label>Entrada</label><input type="time" id="ponto_entrada"></div>
+            <div class="campo"><label>Saída</label><input type="time" id="ponto_saida"></div>
+            <div class="campo"><label>Justificativa</label><input type="text" id="ponto_justificativa"></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="salvarPonto()">💾 Salvar Registro</button>
+        <button class="btn btn-primario" onclick="gerarEspelho()">📋 Gerar Espelho</button>
+
+        <h3 style="margin-top:24px;">Registros de Ponto</h3>
+        <table>
+            <thead><tr><th>Matrícula</th><th>Data</th><th>Entrada</th><th>Saída</th><th>Horas</th><th>Ações</th></tr></thead>
+            <tbody id="lista-ponto"></tbody>
+        </table>
     </div>
-    <button onclick="salvarBancoHoras()">Salvar Fechamento</button>
-    <div id="lista_banco"></div>
-  </section>
 
-  <!-- Fechamento Automático -->
-  <section class="card">
-    <h2>Fechamento Mensal Automático</h2>
-    <div class="grid">
-      <input type="number" id="f_mes" placeholder="Mês" min="1" max="12">
-      <input type="number" id="f_ano" placeholder="Ano" min="2024" max="2050">
+    <!-- Aba Férias -->
+    <div id="aba-ferias" class="aba">
+        <h2>Gestão de Férias</h2>
+        <div class="form-grid">
+            <div class="campo"><label>Matrícula</label><input type="text" id="ferias_matricula"></div>
+            <div class="campo"><label>Nome</label><input type="text" id="ferias_nome"></div>
+            <div class="campo"><label>Início</label><input type="date" id="ferias_inicio"></div>
+            <div class="campo"><label>Dias</label><input type="number" id="ferias_dias"></div>
+            <div class="campo"><label>Status</label><select id="ferias_status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option></select></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="salvarFerias()">💾 Salvar Solicitação</button>
+
+        <h3 style="margin-top:24px;">Solicitações</h3>
+        <table>
+            <thead><tr><th>Matrícula</th><th>Nome</th><th>Início</th><th>Dias</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="lista-ferias"></tbody>
+        </table>
     </div>
-    <button onclick="fecharMesAutomatico(+document.getElementById('f_mes').value, +document.getElementById('f_ano').value)">🔄 Fechar Mês</button>
-  </section>
 
-  <!-- Férias -->
-  <section class="card">
-    <h2>Solicitações de Férias</h2>
-    <table>
-      <thead><tr><th>Matrícula</th><th>Nome</th><th>Início</th><th>Dias</th><th>Status</th><th>Ação</th></tr></thead>
-      <tbody id="tabela_ferias"></tbody>
-    </table>
-  </section>
+    <!-- Aba Atestados -->
+    <div id="aba-atestados" class="aba">
+        <h2>Controle de Atestados</h2>
+        <div class="form-grid">
+            <div class="campo"><label>Matrícula</label><input type="text" id="atestado_matricula"></div>
+            <div class="campo"><label>Nome</label><input type="text" id="atestado_nome"></div>
+            <div class="campo"><label>Data</label><input type="date" id="atestado_data"></div>
+            <div class="campo"><label>Motivo</label><input type="text" id="atestado_motivo"></div>
+            <div class="campo"><label>Status</label><select id="atestado_status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option></select></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="salvarAtestado()">💾 Salvar Atestado</button>
 
-  <!-- Atestados -->
-  <section class="card">
-    <h2>Atestados Recebidos</h2>
-    <table>
-      <thead><tr><th>Matrícula</th><th>Nome</th><th>Data envio</th><th>Descrição</th><th>Status</th><th>Ação</th></tr></thead>
-      <tbody id="tabela_atestados"></tbody>
-    </table>
-  </section>
+        <h3 style="margin-top:24px;">Atestados Cadastrados</h3>
+        <table>
+            <thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Motivo</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="lista-atestados"></tbody>
+        </table>
+    </div>
 
-  <!-- Comunicados -->
-  <section class="card">
-    <h2>Novo Comunicado</h2>
-    <input type="text" id="com_titulo" placeholder="Título">
-    <textarea id="com_texto" rows="4" placeholder="Texto do aviso"></textarea>
-    <button onclick="enviarComunicado()">Publicar</button>
-  </section>
+    <!-- Aba Banco de Horas -->
+    <div id="aba-banco" class="aba">
+        <h2>Banco de Horas</h2>
+        <div class="form-grid">
+            <div class="campo"><label>Matrícula</label><input type="text" id="banco_matricula"></div>
+            <div class="campo"><label>Saldo Atual</label><input type="number" step="0.01" id="banco_saldo"></div>
+            <div class="campo"><label>Mês / Ano</label><input type="month" id="banco_periodo"></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="salvarBanco()">💾 Atualizar Saldo</button>
+
+        <h3 style="margin-top:24px;">Histórico</h3>
+        <table>
+            <thead><tr><th>Matrícula</th><th>Período</th><th>Saldo</th><th>Ações</th></tr></thead>
+            <tbody id="lista-banco"></tbody>
+        </table>
+    </div>
+
+    <!-- Aba Comunicados -->
+    <div id="aba-comunicados" class="aba">
+        <h2>Comunicados</h2>
+        <div class="campo"><label>Título</label><input type="text" id="com_titulo"></div>
+        <div class="campo" style="margin-top:12px;"><label>Conteúdo</label><textarea id="com_texto" rows="5"></textarea></div>
+        <button class="btn btn-sucesso" onclick="publicarComunicado()">📢 Publicar</button>
+
+        <h3 style="margin-top:24px;">Comunicados Publicados</h3>
+        <div id="lista-comunicados"></div>
+    </div>
 </div>
 
 <script>
-const JORNADA_PADRAO_DIARIA = 8;
+// ===== CONFIGURAÇÕES =====
+const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
+const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-function sair() { location.reload(); }
+// 🔐 SENHA MESTRA - ALTERE AQUI SE QUISER OUTRA
+const SENHA_MESTRA = "Sisgespe2026";
 
-function preencherDataAtual() {
-  const hoje = new Date();
-  document.getElementById('f_mes').value = hoje.getMonth() + 1;
-  document.getElementById('f_ano').value = hoje.getFullYear();
+// ===== FUNÇÃO DE LOGIN =====
+function entrar() {
+    const senhaDigitada = document.getElementById("senha").value.trim();
+    
+    // Verifica se a senha está correta
+    if (senhaDigitada === SENHA_MESTRA) {
+        document.getElementById("tela-login").style.display = "none";
+        document.getElementById("painel").style.display = "block";
+        carregarTodasListas();
+    } else {
+        const aviso = document.getElementById("aviso-erro");
+        aviso.style.display = "block";
+        // Esconde a mensagem após 3 segundos
+        setTimeout(() => aviso.style.display = "none", 3000);
+    }
 }
 
-function contarDiasUteis(mes, ano) {
-  let diasUteis = 0;
-  const ultimoDia = new Date(ano, mes, 0).getDate();
-  for (let d = 1; d <= ultimoDia; d++) {
-    const dw = new Date(ano, mes - 1, d).getDay();
-    if (dw !== 0 && dw !== 6) diasUteis++;
-  }
-  return diasUteis;
+function sair() {
+    document.getElementById("painel").style.display = "none";
+    document.getElementById("tela-login").style.display = "flex";
+    document.getElementById("senha").value = "";
 }
 
-async function calcularBeneficios(matricula, mes, ano) {
-  const { data: cfg } = await supabase
-    .from('beneficios_config')
-    .select('valor_vt_dia, valor_vr_dia')
-    .eq('matricula', matricula)
-    .single();
-
-  const { data: dias } = await supabase
-    .from('registros_ponto')
-    .select('data')
-    .eq('matricula', matricula)
-    .like('data', `%/${mes.toString().padStart(2,'0')}/${ano}`);
-
-  const diasTrabalhados = dias?.length || 0;
-  return {
-    vt: cfg ? Number(cfg.valor_vt_dia) * diasTrabalhados : 0,
-    vr: cfg ? Number(cfg.valor_vr_dia) * diasTrabalhados : 0
-  };
+function abrirAba(nome) {
+    document.querySelectorAll(".aba").forEach(aba => aba.classList.remove("ativa"));
+    document.getElementById("aba-" + nome).classList.add("ativa");
 }
 
-async function cadastrarColaborador() {
-  const dados = {
-    nome: document.getElementById('c_nome').value,
-    matricula: document.getElementById('c_matricula').value,
-    cpf: document.getElementById('c_cpf').value,
-    senha_hash: btoa(document.getElementById('c_senha').value),
-    cargo: document.getElementById('c_cargo').value,
-    setor: document.getElementById('c_setor').value,
-    admissao: document.getElementById('c_admissao').value,
-    ativo: true
-  };
-  const { error } = await supabase.from('colaboradores').insert(dados);
-  alert(error ? 'Erro: ' + error.message : 'Colaborador cadastrado!');
+// ===== DEMAIS FUNÇÕES INTEGRADAS COM SUPABASE =====
+async function salvarColaborador() {
+    const matricula = document.getElementById("col_matricula").value.trim();
+    if (!matricula) return alert("Preencha a matrícula!");
+
+    const dados = {
+        matricula,
+        nome: document.getElementById("col_nome").value,
+        cpf: document.getElementById("col_cpf").value,
+        cargo: document.getElementById("col_cargo").value,
+        setor: document.getElementById("col_setor").value,
+        admissao: document.getElementById("col_admissao").value || null,
+        valor_vt_dia: parseFloat(document.getElementById("col_vt").value) || 0,
+        valor_vr_dia: parseFloat(document.getElementById("col_vr").value) || 0,
+        ativo: document.getElementById("col_status").value === "ativo"
+    };
+
+    const { data: existente } = await supabase.from("colaboradores").select("matricula").eq("matricula", matricula).maybeSingle();
+    let erro;
+
+    if (existente) {
+        const { error } = await supabase.from("colaboradores").update(dados).eq("matricula", matricula);
+        erro = error;
+    } else {
+        const { error } = await supabase.from("colaboradores").insert([dados]);
+        erro = error;
+    }
+
+    if (erro) return alert("Erro: " + erro.message);
+    alert("✅ Salvo com sucesso!");
+    limparFormColab();
+    listarColaboradores();
 }
 
-async function carregarPontos() {
-  const filtro = document.getElementById('filtro_mat').value.trim();
-  let q = supabase.from('registros_ponto').select('*').order('criado_em', {desc:true});
-  if(filtro) q = q.eq('matricula', filtro);
-  const {data} = await q;
-  document.getElementById('tabela_pontos').innerHTML = data?.map(r=>`
-    <tr>
-      <td>${r.matricula}</td>
-      <td>${r.nome}</td>
-      <td>${r.data}</td>
-      <td>${r.entrada ?? '-'}</td>
-      <td>${r.saida ?? '-'}</td>
-      <td>${r.horas_trabalhadas?.toFixed(2) ?? '0'}h</td>
-      <td>${r.metodo}</td>
-    </tr>`).join('') || '<tr><td colspan="7">Nenhum registro</td></tr>';
+function limparFormColab() {
+    document.getElementById("col_nome").value = "";
+    document.getElementById("col_matricula").value = "";
+    document.getElementById("col_cpf").value = "";
+    document.getElementById("col_cargo").value = "";
+    document.getElementById("col_setor").value = "";
+    document.getElementById("col_admissao").value = "";
+    document.getElementById("col_vt").value = "";
+    document.getElementById("col_vr").value = "";
+    document.getElementById("col_status").value = "ativo";
 }
 
-async function salvarBancoHoras() {
-  const dados = {
-    matricula: document.getElementById('b_matricula').value,
-    mes_referencia: parseInt(document.getElementById('b_mes').value),
-    ano_referencia: parseInt(document.getElementById('b_ano').value),
-    saldo_atual: parseFloat(document.getElementById('b_saldo').value)
-  };
-  const {error} = await supabase.from('banco_horas').upsert(dados, {onConflict:['matricula','mes_referencia','ano_referencia']});
-  alert(error ? 'Erro: ' + error.message : 'Salvo!');
-  listarBanco();
+async function listarColaboradores() {
+    const { data, error } = await supabase.from("colaboradores").select("*").order("nome");
+    if (error) return console.error(error);
+
+    const tbody = document.getElementById("lista-colab");
+    tbody.innerHTML = data.map(c => `
+        <tr>
+            <td>${c.matricula}</td>
+            <td>${c.nome}</td>
+            <td>${c.cargo || "-"}</td>
+            <td>${c.setor || "-"}</td>
+            <td>${c.ativo ? "✅ Ativo" : "❌ Inativo"}</td>
+            <td class="acoes">
+                <button class="btn btn-alerta" onclick="editarColab('${c.matricula}')">✏️</button>
+                <button class="btn btn-erro" onclick="excluirColab('${c.matricula}')">🗑️</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+async function editarColab(matricula) {
+    const { data } = await supabase.from("colaboradores").select("*").eq("matricula", matricula).single();
+    if (!data) return;
+    document.getElementById("col_nome").value = data.nome || "";
+    document.getElementById("col_matricula").value = data.matricula || "";
+    document.getElementById("col_cpf").value = data.cpf || "";
+    document.getElementById("col_cargo").value = data.cargo || "";
+    document.getElementById("col_setor").value = data.setor || "";
+    document.getElementById("col_admissao").value = data.admissao || "";
+    document.getElementById("col_vt").value = data.valor_vt_dia || "";
+    document.getElementById("col_vr").value = data.valor_vr_dia || "";
+    document.getElementById("col_status").value = data.ativo ? "ativo" : "inativo";
+}
+
+async function excluirColab(matricula) {
+    if (!confirm("Excluir esse colaborador?")) return;
+    const { error } = await supabase.from("colaboradores").delete().eq("matricula", matricula);
+    if (error) return alert("Erro: " + error.message);
+    listarColaboradores();
+}
+
+function calcularHoras(entrada, saida) {
+    if (!entrada || !saida) return 0;
+    const [h1, m1] = entrada.split(":").map(Number);
+    const [h2, m2] = saida.split(":").map(Number);
+    const total = (h2 * 60 + m2) - (h1 * 60 + m1);
+    return total > 0 ? Number((total / 60).toFixed(2)) : 0;
+}
+
+async function salvarPonto() {
+    const matricula = document.getElementById("ponto_matricula").value.trim();
+    const data = document.getElementById("ponto_data").value;
+    if (!matricula || !data) return alert("Preencha matrícula e data!");
+
+    const entrada = document.getElementById("ponto_entrada").value;
+    const saida = document.getElementById("ponto_saida").value;
+    const horas = calcularHoras(entrada, saida);
+
+    const registro = { matricula, data, entrada, saida, horas_trabalhadas: horas, justificativa: document.getElementById("ponto_justificativa").value };
+
+    const { data: existente } = await supabase.from("registros_ponto").select("id").eq("matricula", matricula).eq("data", data).maybeSingle();
+    let erro;
+
+    if (existente) {
+        const { error } = await supabase.from("registros_ponto").update(registro).eq("id", existente.id);
+        erro = error;
+    } else {
+        const { error } = await supabase.from("registros_ponto").insert([registro]);
+        erro = error;
+    }
+
+    if (erro) return alert("Erro: " + erro.message);
+    alert("✅ Registro salvo!");
+    listarPontos();
+}
+
+async function listarPontos() {
+    const { data, error } = await supabase.from("registros_ponto").select("*").order("data", { ascending: false });
+    if (error) return console.error(error);
+
+    const tbody = document.getElementById("lista-ponto");
+    tbody.innerHTML = data.map(p => `
+        <tr>
+            <td>${p.matricula}</td>
+            <td>${new Date(p.data).toLocaleDateString("pt-BR")}</td>
+            <td>${p.entrada || "-"}</td>
+            <td>${p.saida || "-"}</td>
+            <td>${p.horas_trabalhadas.toFixed(2)}h</td>
+            <td class="acoes">
+                <button class="btn btn-alerta" onclick="editarPonto(${p.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirPonto(${p.id})">🗑️</button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+async function editarPonto(id) {
+    const { data } = await supabase.from("registros_ponto").select("*").eq("id", id).single();
+    if (!data) return;
+    document.getElementById("ponto_matricula").value = data.matricula;
+    document.getElementById("ponto_data").value = data.data;
+    document.getElementById("ponto_entrada").value = data.entrada || "";
+    document.getElementById("ponto_saida").value = data.saida || "";
+    document.getElementById("ponto_justificativa").value = data.justificativa || "";
+}
+
+async function gerarEspelho() {
+    const matricula = document.getElementById("ponto_matricula").value.trim();
+    if (!matricula) return alert("Informe a matrícula!");
+    const { data } = await supabase.from("registros_ponto").select("*").eq("matricula", matricula);
+    if (!data || data.length === 0) return alert("Nenhum registro encontrado!");
+    const total = data.reduce((s, p) => s + Number(p.horas_trabalhadas), 0);
+    alert(`📋 Espelho de Ponto\nMatrícula: ${matricula}\nTotal de horas: ${total.toFixed(2)}h`);
+}
+
+async function excluirPonto(id) {
+    if (!confirm("Excluir registro?")) return;
+    const { error } = await supabase.from("registros_ponto").delete().eq("id", id);
+    if (error) return alert("Erro: " + error.message);
+    listarPontos();
+}
+
+async function salvarFerias() {
+    const dados = {
+        matricula: document.getElementById("ferias_matricula").value,
+        nome: document.getElementById("ferias_nome").value,
+        data_inicio: document.getElementById("ferias_inicio").value,
+        dias: parseInt(document.getElementById("ferias_dias").value) || 0,
+        status: document.getElementById("ferias_status").value
+    };
+    const { error } = await supabase.from("solicitacoes_ferias").insert([dados]);
+    if (error) return alert("Erro: " + error.message);
+    alert("✅ Solicitação salva!");
+    listarFerias();
+}
+
+async function listarFerias() {
+    const { data, error } = await supabase.from("solicitacoes_ferias").select("*").order("data_inicio");
+    if (error) return console.error(error);
+
+    const tbody = document.getElementById("lista-ferias");
+    tbody.innerHTML = data.map(f => `
+        <tr>
+            <td>${f.matricula}</td>
+            <td>${f.nome}</td>
+            <td>${new Date(f.data_inicio).toLocaleDateString("pt-BR")}</td>
+            <td>${f.dias}</td>
+            <td>${f.status}</td>
+            <td><button class="btn btn-erro" onclick="excluirFerias(${f.id})">🗑️</button></td>
+        </tr>
+    `).join("");
+}
+
+async function excluirFerias(id) {
+    if (!confirm("Excluir solicitação?")) return;
+    const { error } = await supabase.from("solicitacoes_ferias").delete().eq("id", id);
+    if (error) return alert("Erro: " + error.message);
+    listarFerias();
+}
+
+async function salvarAtestado() {
+    const dados = {
+        matricula: document.getElementById("atestado_matricula").value,
+        nome: document.getElementById("atestado_nome").value,
+        data_envio: document.getElementById("atestado_data").value,
+        descricao: document.getElementById("atestado_motivo").value,
+        status: document.getElementById("atestado_status").value
+    };
+    const { error } = await supabase.from("atestados").insert([dados]);
+    if (error) return alert("Erro: " + error.message);
+    alert("✅ Atestado salvo!");
+    listarAtestados();
+}
+
+async function listarAtestados() {
+    const { data, error } = await supabase.from("atestados").select("*").order("data_envio", { ascending: false });
+    if (error) return console.error(error);
+
+    const tbody = document.getElementById("lista-atestados");
+    tbody.innerHTML = data.map(a => `
+        <tr>
+            <td>${a.matricula}</td>
+            <td>${a.nome}</td>
+            <td>${new Date(a.data_envio).toLocaleDateString("pt-BR")}</td>
+            <td>${a.descricao || "-"}</td>
+            <td>${a.status}</td>
+            <td><button class="btn btn-erro" onclick="excluirAtestado(${a.id})">🗑️</button></td>
+        </tr>
+    `).join("");
+}
+
+async function excluirAtestado(id) {
+    if (!confirm("Excluir atestado?")) return;
+    const { error } = await supabase.from("atestados").delete().eq("id", id);
+    if (error) return alert("Erro: " + error.message);
+    listarAtestados();
+}
+
+async function salvarBanco() {
+    const dados = {
+        matricula: document.getElementById("banco_matricula").value,
+        mes: parseInt(document.getElementById("banco_periodo").value.split("-")[1]),
+        ano: parseInt(document.getElementById("banco_periodo").value.split("-")[0]),
+        saldo_acumulado: parseFloat(document.getElementById("banco_saldo").value) || 0
+    };
+    const { error } = await supabase.from("banco_horas").insert([dados]);
+    if (error) return alert("Erro: " + error.message);
+    alert("✅ Saldo atualizado!");
+    listarBanco();
 }
 
 async function listarBanco() {
-  const {data} = await supabase.from('banco_horas').select('*').order('ano_referencia',{desc:true}).order('mes_referencia',{desc:true});
-  document.getElementById('lista_banco').innerHTML = '<table style="margin-top:1rem"><thead><tr><th>Matrícula</th><th>Mês/Ano</th><th>Total</th><th>Saldo mês</th><th>Saldo atual</th><th>VT</th><th>VR</th><th>Dias úteis</th></tr></thead><tbody>' +
-    data?.map(x=>`<tr>
-      <td>${x.matricula}</td>
-      <td>${x.mes_referencia}/${x.ano_referencia}</td>
-      <td>${x.total_trabalhado?.toFixed(2) ?? '0'}h</td>
-      <td>${x.saldo_mes?.toFixed(2) ?? '0'}h</td>
-      <td>${x.saldo_atual.toFixed(2)}h</td>
-      <td>R$ ${x.total_vt?.toFixed(2) ?? '0.00'}</td>
-      <td>R$ ${x.total_vr?.toFixed(2) ?? '0.00'}</td>
-      <td>${x.dias_uteis ?? '-'}</td>
-    </tr>`).join('') + '</tbody></table>';
+    const { data, error } = await supabase.from("banco_horas").select("*").order("ano", { ascending: false }).order("mes", { ascending: false });
+    if (error) return console.error(error);
+
+    const tbody = document.getElementById("lista-banco");
+    tbody.innerHTML = data.map(b => `
+        <tr>
+            <td>${b.matricula}</td>
+            <td>${b.mes}/${b.ano}</td>
+            <td>${b.saldo_acumulado.toFixed(2)}h</td>
+            <td><button class="btn btn-erro" onclick="excluirBanco(${b.id})">🗑️</button></td>
+        </tr>
+    `).join("");
 }
 
-async function salvarBeneficios() {
-  const dados = {
-    matricula: document.getElementById('b_mat').value,
-    valor_vt_dia: document.getElementById('vt_dia').value,
-    valor_vr_dia: document.getElementById('vr_dia').value
-  };
-  const { error } = await supabase.from('beneficios_config').upsert(dados, {onConflict:['matricula']});
-  alert(error ? 'Erro: ' + error.message : '✅ Benefícios salvos!');
+async function excluirBanco(id) {
+    if (!confirm("Excluir registro?")) return;
+    const { error } = await supabase.from("banco_horas").delete().eq("id", id);
+    if (error) return alert("Erro: " + error.message);
+    listarBanco();
 }
 
-async function fecharMesAutomatico(mes, ano) {
-  if (!mes || !ano) return alert("Informe mês e ano!");
-
-  const { data: colaboradores, error: eColab } = await supabase
-    .from('colaboradores')
-    .select('matricula, nome')
-    .eq('ativo', true);
-  if (eColab) return console.error(eColab);
-
-  let mesSeguinte = mes + 1;
-  let anoSeguinte = ano;
-  if (mesSeguinte > 12) { mesSeguinte = 1; anoSeguinte++; }
-  const diasUteisProx = contarDiasUteis(mesSeguinte, anoSeguinte);
-
-  for (const colab of colaboradores) {
-    const { data: pontos } = await supabase
-      .from('registros_ponto')
-      .select('horas_trabalhadas')
-      .eq('matricula', colab.matricula)
-      .like('data', `%/${mes.toString().padStart(2,'0')}/${ano}`);
-
-    const totalHoras = pontos?.reduce((s, p) => s + Number(p.horas_trabalhadas || 0), 0) || 0;
-    const horasEsperadas = JORNADA_PADRAO_DIARIA * 22;
-    const saldoMes = totalHoras - horasEsperadas;
-
-    const { data: ultimo } = await supabase
-      .from('banco_horas')
-      .select('saldo_atual')
-      .eq('matricula', colab.matricula)
-      .order('ano_referencia', {desc: true})
-      .order('mes_referencia', {desc: true})
-      .limit(1)
-      .single();
-    const saldoAnterior = ultimo?.saldo_atual ?? 0;
-    const saldoFinal = saldoAnterior + saldoMes;
-
-    await supabase.from('banco_horas').upsert({
-      matricula: colab.matricula,
-      mes_referencia: mes,
-      ano_referencia: ano,
-      total_trabalhado: totalHoras,
-      saldo_mes: saldoMes,
-      saldo_atual: saldoFinal
-    }, { onConflict: ['matricula','mes_referencia','ano_referencia'] });
-
-    const benef = await calcularBeneficios(colab.matricula, mes, ano);
-    const { data: proximoMes } = await supabase
-      .from('banco_horas')
-      .select('total_vt, total_vr')
-      .eq('matricula', colab.matricula)
-      .eq('mes_referencia', mesSeguinte)
-      .eq('ano_referencia', anoSeguinte)
-      .maybeSingle();
-
-    const vtAcum = (proximoMes?.total_vt || 0) + benef.vt;
-    const vrAcum = (proximoMes?.total_vr || 0) + benef.vr;
-
-    await supabase.from('banco_horas').upsert({
-      matricula: colab.matricula,
-      mes_referencia: mesSeguinte,
-      ano_referencia: anoSeguinte,
-      dias_uteis: diasUteisProx,
-      total_vt: vtAcum,
-      total_vr: vrAcum
-    }, { onConflict: ['matricula','mes_referencia','ano_referencia'] });
-  }
-  alert(`✅ Fechamento ${mes}/${ano} concluído! Benefícios → ${mesSeguinte}/${anoSeguinte}`);
-  listarBanco();
+async function publicarComunicado() {
+    const dados = {
+        titulo: document.getElementById("com_titulo").value,
+        conteudo: document.getElementById("com_texto").value,
+        data_publicacao: new Date().toISOString().split("T")[0]
+    };
+    const { error } = await supabase.from("comunicados").insert([dados]);
+    if (error) return alert("Erro: " + error.message);
+    alert("✅ Publicado!");
+    listarComunicados();
 }
 
-async function carregarFerias() {
-  const {data} = await supabase.from('solicitacoes_ferias').select('*').order('criado_em',{desc:true});
-  document.getElementById('tabela_ferias').innerHTML = data?.map(f=>`
-    <tr>
-      <td>${f.matricula}</td><td>${f.nome}</td><td>${f.data_inicio}</td><td>${f.dias}</td>
-      <td class="status ${f.status==='Pendente'?'pendente':f.status==='Aprovado'?'aprovado':'recusado'}">${f.status}</td>
-      <td>
-        <button onclick="alterarStatusFerias(${f.id},'Aprovado')">✓</button>
-        <button onclick="alterarStatusFerias(${f.id},'Recusado')">✗</button>
-      </td>
-    </tr>`).join('') || '<tr><td colspan="6">Nenhuma solicitação</td></tr>';
-}
-async function alterarStatusFerias(id,st) {
-  await supabase.from('solicitacoes_ferias').update({status:st}).eq('id',id);
-  carregarFerias();
+async function listarComunicados() {
+    const { data, error } = await supabase.from("comunicados").select("*").order("data_publicacao", { ascending: false });
+    if (error) return console.error(error);
+
+    const div = document.getElementById("lista-comunicados");
+    div.innerHTML = data.map(c => `
+        <div style="background:#F9FAFB; padding:16px; border-radius:6px; margin-bottom:12px; border-left:4px solid var(--primario);">
+            <h4>${c.titulo} <small style="color:#86909C;">(${new Date(c.data_publicacao).toLocaleDateString("pt-BR")})</small></h4>
+            <p style="margin-top:8px;">${c.conteudo}</p>
+        </div>
+    `).join("");
 }
 
-async function carregarAtestados() {
-  const {data} = await supabase.from('atestados').select('*').order('criado_em',{desc:true});
-  document.getElementById('tabela_atestados').innerHTML = data?.map(a=>`
-    <tr>
-      <td>${a.matricula}</td><td>${a.nome}</td><td>${a.data_envio}</td><td>${a.descricao.slice(0,45)}…</td>
-      <td class="status ${a.status==='Pendente'?'pendente':a.status==='Aprovado'?'aprovado':'recusado'}">${a.status}</td>
-      <td>
-        <button onclick="alterarStatusAtestado(${a.id},'Aprovado')">✓</button>
-        <button onclick="alterarStatusAtestado(${a.id},'Recusado')">✗</button>
-      </td>
-    </tr>`).join('') || '<tr><td colspan="6">Nenhum atestado</td></tr>';
+async function carregarTodasListas() {
+    listarColaboradores();
+    listarPontos();
+    listarFerias();
+    listarAtestados();
+    listarBanco();
+    listarComunicados();
 }
-async function alterarStatusAtestado(id,st) {
-  await supabase.from('atestados').update({status:st}).eq('id',id);
-  carregarAtestados();
-}
-
-async function enviarComunicado() {
-  const {error} = await supabase.from('comunicados').insert({
-    titulo: document.getElementById('com_titulo').value,
-    conteudo: document.getElementById('com_texto').value,
-    data_publicacao: new Date().toLocaleDateString('pt-BR')
-  });
-  alert(error ? 'Erro' : 'Publicado!');
-}
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  preencherDataAtual();
-  carregarPontos();
-  carregarFerias();
-  carregarAtestados();
-  listarBanco();
-});
 </script>
 </body>
 </html>
