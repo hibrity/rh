@@ -16,199 +16,48 @@
       --alerta: #f59e0b;
       --erro: #ef4444;
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-    body {
-      background-color: #f8fafc;
-      color: var(--text);
-      line-height: 1.6;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background-color: #f8fafc; color: var(--text); line-height: 1.6; }
 
     /* Tela de Login */
-    .tela-login {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 1rem;
-    }
-    .card-login {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    .card-login h1 {
-      text-align: center;
-      color: var(--primary);
-      margin-bottom: 1rem;
-      font-size: 1.6rem;
-    }
-    .card-login p {
-      text-align: center;
-      color: var(--text-light);
-      margin-bottom: 1.5rem;
-    }
+    .tela-login { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem; }
+    .card-login { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 2.5rem; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card-login h1 { text-align: center; color: var(--primary); margin-bottom: 1rem; font-size: 1.6rem; }
+    .card-login p { text-align: center; color: var(--text-light); margin-bottom: 1.5rem; }
 
-    input {
-      width: 100%;
-      padding: 0.9rem;
-      margin: 0.5rem 0 1rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 0.9rem;
-      border: none;
-      border-radius: 6px;
-      background: var(--primary);
-      color: white;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    button:hover {
-      background: #1d4ed8;
-    }
+    input { width: 100%; padding: 0.9rem; margin: 0.5rem 0 1rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+    button { width: 100%; padding: 0.9rem; border: none; border-radius: 6px; background: var(--primary); color: white; font-size: 1rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: #1d4ed8; }
 
-    .msg {
-      padding: 1rem;
-      border-radius: 6px;
-      margin-top: 1rem;
-      text-align: center;
-      display: none;
-    }
-    .sucesso {
-      background: rgba(16, 185, 129, 0.15);
-      color: #065f46;
-      display: block;
-    }
-    .erro {
-      background: rgba(239, 68, 68, 0.15);
-      color: #991b1b;
-      display: block;
-    }
+    .msg { padding: 1rem; border-radius: 6px; margin-top: 1rem; text-align: center; display: none; }
+    .sucesso { background: rgba(16, 185, 129, 0.15); color: #065f46; display: block; }
+    .erro { background: rgba(239, 68, 68, 0.15); color: #991b1b; display: block; }
 
     /* Tela Principal */
-    .tela-principal {
-      display: none;
-    }
-    header {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      padding: 1.2rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .usuario {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .btn-sair {
-      background: var(--erro);
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      color: white;
-      border: none;
-      cursor: pointer;
-      width: auto;
-    }
-    nav {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 2rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.2rem;
-    }
-    .item-menu {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .item-menu:hover {
-      background: var(--hover);
-      border-color: var(--primary);
-      transform: translateY(-2px);
-    }
-    .item-menu h2 {
-      font-size: 1.2rem;
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .item-menu p {
-      color: var(--text-light);
-      font-size: 0.95rem;
-    }
-    main {
-      max-width: 900px;
-      margin: 0 auto 3rem;
-      padding: 0 2rem;
-    }
-    .pagina {
-      display: none;
-      background: var(--bg);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      padding: 1.8rem;
-      margin-top: 1.5rem;
-    }
-    .pagina.ativa {
-      display: block;
-    }
-    h3 {
-      font-size: 1.3rem;
-      color: var(--primary);
-      margin-bottom: 1.2rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    textarea {
-      width: 100%;
-      padding: 0.8rem;
-      margin: 0.5rem 0 1rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 1rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1rem;
-    }
-    th, td {
-      padding: 0.9rem;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      background: #f8fafc;
-      font-weight: 600;
-    }
-    .status {
-      font-weight: bold;
-    }
+    .tela-principal { display: none; }
+    header { background: var(--bg); border-bottom: 1px solid var(--border); padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .resumo-rapido { display: flex; gap: 1.5rem; font-size: 0.95rem; color: var(--text-light); flex-wrap: wrap; }
+    .resumo-rapido span { color: var(--primary); font-weight: bold; }
+    .usuario { display: flex; align-items: center; gap: 1rem; }
+    .btn-sair { background: var(--erro); padding: 0.5rem 1rem; border-radius: 6px; color: white; border: none; cursor: pointer; width: auto; }
+    nav { max-width: 900px; margin: 2rem auto; padding: 0 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.2rem; }
+    .item-menu { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; cursor: pointer; transition: all 0.2s ease; }
+    .item-menu:hover { background: var(--hover); border-color: var(--primary); transform: translateY(-2px); }
+    .item-menu h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.6rem; }
+    .item-menu p { color: var(--text-light); font-size: 0.95rem; }
+    main { max-width: 900px; margin: 0 auto 3rem; padding: 0 2rem; }
+    .pagina { display: none; background: var(--bg); border-radius: 10px; border: 1px solid var(--border); padding: 1.8rem; margin-top: 1.5rem; }
+    .pagina.ativa { display: block; }
+    h3 { font-size: 1.3rem; color: var(--primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    textarea { width: 100%; padding: 0.8rem; margin: 0.5rem 0 1rem; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { padding: 0.9rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #f8fafc; font-weight: 600; }
+    .status { font-weight: bold; }
     .pendente { color: var(--alerta); }
     .aprovado { color: var(--sucesso); }
     .recusado { color: var(--erro); }
+    .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; }
   </style>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.0/+esm'
@@ -237,7 +86,13 @@
   <!-- Tela Principal -->
   <div class="tela-principal" id="telaPrincipal">
     <header>
-      <h1>Meu Painel</h1>
+      <div>
+        <h1>Meu Painel</h1>
+        <div class="resumo-rapido">
+          <span id="horasMes">Horas/mês: 0h</span>
+          <span id="saldoBanco">Saldo banco: 0h</span>
+        </div>
+      </div>
       <div class="usuario">
         <span id="nomeUsuario"></span>
         <button class="btn-sair" onclick="sair()">Sair</button>
@@ -247,7 +102,7 @@
     <nav>
       <div class="item-menu" onclick="abrirPagina('ponto')">
         <h2>🕒 Controle de Ponto</h2>
-        <p>Marcar e consultar horários</p>
+        <p>Entrada, saída e intervalo</p>
       </div>
       <div class="item-menu" onclick="abrirPagina('ferias')">
         <h2>🏖️ Férias</h2>
@@ -259,7 +114,7 @@
       </div>
       <div class="item-menu" onclick="abrirPagina('dados')">
         <h2>👤 Meus Dados</h2>
-        <p>Informações cadastrais</p>
+        <p>Informações cadastrais e saldo</p>
       </div>
       <div class="item-menu" onclick="abrirPagina('comunicados')">
         <h2>📢 Comunicados</h2>
@@ -270,14 +125,17 @@
     <main>
       <div id="pag-ponto" class="pagina ativa">
         <h3>Controle de Ponto</h3>
-        <p>Data: <strong id="dataHoje"></strong> | Hora: <strong id="horaAtual"></strong></p>
-        <br>
-        <button onclick="marcarPonto()">🕒 Marcar Ponto Agora</button>
+        <p>Data: <strong id="dataHoje"></strong></p>
+        <div class="grid-form">
+          <input type="time" id="entrada" placeholder="Entrada">
+          <input type="time" id="saida" placeholder="Saída">
+        </div>
+        <button onclick="marcarPonto()">💾 Salvar Registro</button>
         <div id="msgPonto" class="msg"></div>
 
         <h3 style="margin-top: 2rem;">Meus Registros</h3>
         <table>
-          <thead><tr><th>Data</th><th>Horário</th><th>Método</th></tr></thead>
+          <thead><tr><th>Data</th><th>Entrada</th><th>Saída</th><th>Horas úteis</th></tr></thead>
           <tbody id="tabelaPonto"></tbody>
         </table>
       </div>
@@ -312,6 +170,11 @@
       <div id="pag-dados" class="pagina">
         <h3>Meus Dados Cadastrais</h3>
         <div id="dadosCadastrais"></div>
+        <div style="margin-top:1.5rem; padding:1rem; background:#f0f9ff; border-left:4px solid var(--primary); border-radius:6px;">
+          <h4 style="margin-bottom:0.5rem;">Resumo de Horas</h4>
+          <p><strong>Total trabalhado no mês:</strong> <span id="detalheHorasMes">0h</span></p>
+          <p><strong>Saldo atual do banco de horas:</strong> <span id="detalheSaldoBanco">0h</span></p>
+        </div>
       </div>
 
       <div id="pag-comunicados" class="pagina">
@@ -335,7 +198,6 @@
         return;
       }
 
-      // Mesmo formato usado para salvar
       const senhaHash = btoa(senha);
 
       const { data, error } = await supabase
@@ -358,7 +220,8 @@
       document.getElementById('telaPrincipal').style.display = 'block';
       
       atualizarHora();
-      carregarTodosDados();
+      await carregarTodosDados();
+      await carregarResumoHoras();
     }
 
     function sair() {
@@ -377,26 +240,33 @@
     function atualizarHora() {
       const agora = new Date();
       document.getElementById('dataHoje').textContent = agora.toLocaleDateString('pt-BR');
-      document.getElementById('horaAtual').textContent = agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     }
-    setInterval(atualizarHora, 1000);
 
     async function marcarPonto() {
-      const agora = new Date();
-      const registro = {
+      const entrada = document.getElementById('entrada').value;
+      const saida = document.getElementById('saida').value;
+      const msg = document.getElementById('msgPonto');
+      const hoje = new Date().toLocaleDateString('pt-BR');
+
+      if (!entrada || !saida) {
+        msg.textContent = "Preencha entrada e saída!";
+        msg.className = "msg erro";
+        return;
+      }
+
+      const { error } = await supabase.from('registros_ponto').insert({
         matricula: usuarioLogado.matricula,
         nome: usuarioLogado.nome,
-        data: agora.toLocaleDateString('pt-BR'),
-        horario: agora.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'}),
-        metodo: "Manual"
-      };
+        data: hoje,
+        entrada,
+        saida,
+        metodo: 'Manual'
+      });
 
-      const msg = document.getElementById('msgPonto');
-      const { error } = await supabase.from('registros_ponto').insert(registro);
-
-      msg.textContent = error ? "❌ Erro ao registrar ponto!" : "✅ Ponto marcado com sucesso!";
+      msg.textContent = error ? "❌ Erro ao salvar" : "✅ Ponto salvo — já descontou 1 h de intervalo";
       msg.className = error ? "msg erro" : "msg sucesso";
       carregarHistoricoPonto();
+      carregarResumoHoras();
     }
 
     async function carregarHistoricoPonto() {
@@ -404,11 +274,15 @@
         .from('registros_ponto')
         .select('*')
         .eq('matricula', usuarioLogado.matricula)
-        .order('criado_em', {ascending: false});
+        .order('criado_em', {desc: true});
 
       document.getElementById('tabelaPonto').innerHTML = data?.map(r => `
-        <tr><td>${r.data}</td><td>${r.horario}</td><td>${r.metodo}</td></tr>
-      `).join('') || "<tr><td colspan='3'>Nenhum registro encontrado</td></tr>";
+        <tr>
+          <td>${r.data}</td>
+          <td>${r.entrada || '-'}</td>
+          <td>${r.saida || '-'}</td>
+          <td>${r.horas_trabalhadas?.toFixed(2) || '0'} h</td>
+        </tr>`).join('') || "<tr><td colspan='4'>Sem registros</td></tr>";
     }
 
     async function solicitarFerias() {
@@ -502,6 +376,38 @@
           <p>${c.conteudo}</p>
         </div>
       `).join('') || "<p>Nenhum comunicado disponível</p>";
+    }
+
+    // Cálculo exato com desconto de 1 h de intervalo
+    async function carregarResumoHoras() {
+      if (!usuarioLogado) return;
+      const hoje = new Date();
+      const mes = hoje.getMonth() + 1;
+      const ano = hoje.getFullYear();
+
+      const { data: pontos } = await supabase
+        .from('registros_ponto')
+        .select('horas_trabalhadas')
+        .eq('matricula', usuarioLogado.matricula)
+        .like('data', `%/${mes.toString().padStart(2,'0')}/${ano}`);
+
+      const horasMes = pontos?.reduce((s, p) => s + Number(p.horas_trabalhadas || 0), 0) || 0;
+
+      const { data: saldo } = await supabase
+        .from('banco_horas')
+        .select('saldo_atual')
+        .eq('matricula', usuarioLogado.matricula)
+        .order('ano_referencia', {desc: true})
+        .order('mes_referencia', {desc: true})
+        .limit(1)
+        .single();
+
+      const saldoFinal = saldo?.saldo_atual ?? 0;
+
+      document.getElementById('horasMes').textContent = `Horas/mês: ${horasMes.toFixed(2)} h`;
+      document.getElementById('saldoBanco').textContent = `Saldo banco: ${saldoFinal.toFixed(2)} h`;
+      document.getElementById('detalheHorasMes').textContent = `${horasMes.toFixed(2)} h`;
+      document.getElementById('detalheSaldoBanco').textContent = `${saldoFinal.toFixed(2)} h`;
     }
 
     function carregarTodosDados() {
