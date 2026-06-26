@@ -19,22 +19,85 @@
     }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { background: var(--bg); color: var(--text); line-height: 1.6; }
-    header { background: var(--primary); color: #fff; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-    .container { max-width: 1100px; margin: 2rem auto; padding: 0 2rem; }
-    .card { background: var(--card); border-radius: 10px; border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    h2 { color: var(--primary); margin-bottom: 1rem; font-size: 1.2rem; border-left: 4px solid var(--secundary); padding-left: 0.7rem; }
-    input, select, textarea { width: 100%; padding: 0.75rem; margin: 0.5rem 0 1rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
-    button { padding: 0.75rem 1.2rem; border: none; border-radius: 6px; background: var(--secundary); color: #fff; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 1.5rem auto;
+      padding: 0 1.2rem;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      border-left: 4px solid var(--secundary);
+      padding-left: 0.7rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    button {
+      padding: 0.75rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--secundary);
+      color: #fff;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
     button:hover { background: var(--primary); }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-    th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid var(--border); }
+    .btn-sair { background: #be123c; padding: 0.5rem 1rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
     th { background: #f8fafc; font-weight: 600; }
     .status { font-weight: bold; }
     .pendente { color: var(--alerta); }
     .aprovado { color: var(--sucesso); }
     .recusado { color: var(--erro); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem; }
-    .btn-sair { background: #be123c; padding: 0.5rem 1rem; }
+
+    /* ✅ Ajustes para celular */
+    @media (max-width: 768px) {
+      .container { padding: 0 1rem; }
+      table { display: block; overflow-x: auto; }
+      .grid { grid-template-columns: 1fr; }
+      header { padding: 1rem; flex-direction: column; align-items: flex-start; }
+    }
   </style>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.42.0/+esm'
@@ -66,7 +129,7 @@
     <button onclick="cadastrarColaborador()">Cadastrar</button>
   </section>
 
-  <!-- Registros de Ponto — Entrada / Saída / Horas -->
+  <!-- Registros de Ponto -->
   <section class="card">
     <h2>Registros de Ponto — Entrada / Saída</h2>
     <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
@@ -81,7 +144,18 @@
     </table>
   </section>
 
-  <!-- Banco de Horas — Fechamento Manual -->
+  <!-- Benefícios -->
+  <section class="card">
+    <h2>⚙️ Benefícios por Colaborador</h2>
+    <div class="grid">
+      <input type="text" id="b_mat" placeholder="Matrícula">
+      <input type="number" id="vt_dia" placeholder="VT por dia R$" step="0.01">
+      <input type="number" id="vr_dia" placeholder="VR/VA por dia R$" step="0.01">
+    </div>
+    <button onclick="salvarBeneficios()">💾 Salvar Configurações</button>
+  </section>
+
+  <!-- Fechamento Manual -->
   <section class="card">
     <h2>Fechamento Manual do Banco de Horas</h2>
     <div class="grid">
@@ -94,16 +168,14 @@
     <div id="lista_banco"></div>
   </section>
 
-  <!-- Fechamento Mensal Automático -->
+  <!-- Fechamento Automático -->
   <section class="card">
     <h2>Fechamento Mensal Automático</h2>
     <div class="grid">
       <input type="number" id="f_mes" placeholder="Mês" min="1" max="12">
       <input type="number" id="f_ano" placeholder="Ano" min="2024" max="2050">
     </div>
-    <button onclick="fecharMesAutomatico(+document.getElementById('f_mes').value, +document.getElementById('f_ano').value)">
-      🔄 Fechar Mês
-    </button>
+    <button onclick="fecharMesAutomatico(+document.getElementById('f_mes').value, +document.getElementById('f_ano').value)">🔄 Fechar Mês</button>
   </section>
 
   <!-- Férias -->
@@ -134,22 +206,46 @@
 </div>
 
 <script>
-// --- Configurações da jornada ---
 const JORNADA_PADRAO_DIARIA = 8;
-const DIAS_UTEIS_PADRAO = 22;
 
-// --- Login simples RH ---
-const usuarioRH = { logado: true };
 function sair() { location.reload(); }
 
-// --- Preenche mês/ano atual ---
 function preencherDataAtual() {
   const hoje = new Date();
   document.getElementById('f_mes').value = hoje.getMonth() + 1;
   document.getElementById('f_ano').value = hoje.getFullYear();
 }
 
-// --- Colaboradores ---
+function contarDiasUteis(mes, ano) {
+  let diasUteis = 0;
+  const ultimoDia = new Date(ano, mes, 0).getDate();
+  for (let d = 1; d <= ultimoDia; d++) {
+    const dw = new Date(ano, mes - 1, d).getDay();
+    if (dw !== 0 && dw !== 6) diasUteis++;
+  }
+  return diasUteis;
+}
+
+async function calcularBeneficios(matricula, mes, ano) {
+  const { data: cfg } = await supabase
+    .from('beneficios_config')
+    .select('valor_vt_dia, valor_vr_dia')
+    .eq('matricula', matricula)
+    .single();
+
+  const { data: dias } = await supabase
+    .from('registros_ponto')
+    .select('data')
+    .eq('matricula', matricula)
+    .like('data', `%/${mes.toString().padStart(2,'0')}/${ano}`);
+
+  const diasTrabalhados = dias?.length || 0;
+  return {
+    vt: cfg ? Number(cfg.valor_vt_dia) * diasTrabalhados : 0,
+    vr: cfg ? Number(cfg.valor_vr_dia) * diasTrabalhados : 0
+  };
+}
+
 async function cadastrarColaborador() {
   const dados = {
     nome: document.getElementById('c_nome').value,
@@ -165,7 +261,6 @@ async function cadastrarColaborador() {
   alert(error ? 'Erro: ' + error.message : 'Colaborador cadastrado!');
 }
 
-// --- Pontos com entrada/saída/horas ---
 async function carregarPontos() {
   const filtro = document.getElementById('filtro_mat').value.trim();
   let q = supabase.from('registros_ponto').select('*').order('criado_em', {desc:true});
@@ -183,7 +278,6 @@ async function carregarPontos() {
     </tr>`).join('') || '<tr><td colspan="7">Nenhum registro</td></tr>';
 }
 
-// --- Banco de Horas Manual ---
 async function salvarBancoHoras() {
   const dados = {
     matricula: document.getElementById('b_matricula').value,
@@ -192,23 +286,35 @@ async function salvarBancoHoras() {
     saldo_atual: parseFloat(document.getElementById('b_saldo').value)
   };
   const {error} = await supabase.from('banco_horas').upsert(dados, {onConflict:['matricula','mes_referencia','ano_referencia']});
-  alert(error ? 'Erro: ' + error.message : 'Saldo salvo!');
+  alert(error ? 'Erro: ' + error.message : 'Salvo!');
   listarBanco();
 }
 
 async function listarBanco() {
   const {data} = await supabase.from('banco_horas').select('*').order('ano_referencia',{desc:true}).order('mes_referencia',{desc:true});
-  document.getElementById('lista_banco').innerHTML = '<table style="margin-top:1rem"><thead><tr><th>Matrícula</th><th>Mês/Ano</th><th>Total</th><th>Saldo mês</th><th>Saldo atual</th></tr></thead><tbody>' +
+  document.getElementById('lista_banco').innerHTML = '<table style="margin-top:1rem"><thead><tr><th>Matrícula</th><th>Mês/Ano</th><th>Total</th><th>Saldo mês</th><th>Saldo atual</th><th>VT</th><th>VR</th><th>Dias úteis</th></tr></thead><tbody>' +
     data?.map(x=>`<tr>
       <td>${x.matricula}</td>
       <td>${x.mes_referencia}/${x.ano_referencia}</td>
       <td>${x.total_trabalhado?.toFixed(2) ?? '0'}h</td>
       <td>${x.saldo_mes?.toFixed(2) ?? '0'}h</td>
       <td>${x.saldo_atual.toFixed(2)}h</td>
+      <td>R$ ${x.total_vt?.toFixed(2) ?? '0.00'}</td>
+      <td>R$ ${x.total_vr?.toFixed(2) ?? '0.00'}</td>
+      <td>${x.dias_uteis ?? '-'}</td>
     </tr>`).join('') + '</tbody></table>';
 }
 
-// --- Fechamento Mensal Automático ---
+async function salvarBeneficios() {
+  const dados = {
+    matricula: document.getElementById('b_mat').value,
+    valor_vt_dia: document.getElementById('vt_dia').value,
+    valor_vr_dia: document.getElementById('vr_dia').value
+  };
+  const { error } = await supabase.from('beneficios_config').upsert(dados, {onConflict:['matricula']});
+  alert(error ? 'Erro: ' + error.message : '✅ Benefícios salvos!');
+}
+
 async function fecharMesAutomatico(mes, ano) {
   if (!mes || !ano) return alert("Informe mês e ano!");
 
@@ -218,6 +324,11 @@ async function fecharMesAutomatico(mes, ano) {
     .eq('ativo', true);
   if (eColab) return console.error(eColab);
 
+  let mesSeguinte = mes + 1;
+  let anoSeguinte = ano;
+  if (mesSeguinte > 12) { mesSeguinte = 1; anoSeguinte++; }
+  const diasUteisProx = contarDiasUteis(mesSeguinte, anoSeguinte);
+
   for (const colab of colaboradores) {
     const { data: pontos } = await supabase
       .from('registros_ponto')
@@ -226,7 +337,7 @@ async function fecharMesAutomatico(mes, ano) {
       .like('data', `%/${mes.toString().padStart(2,'0')}/${ano}`);
 
     const totalHoras = pontos?.reduce((s, p) => s + Number(p.horas_trabalhadas || 0), 0) || 0;
-    const horasEsperadas = JORNADA_PADRAO_DIARIA * DIAS_UTEIS_PADRAO;
+    const horasEsperadas = JORNADA_PADRAO_DIARIA * 22;
     const saldoMes = totalHoras - horasEsperadas;
 
     const { data: ultimo } = await supabase
@@ -237,7 +348,6 @@ async function fecharMesAutomatico(mes, ano) {
       .order('mes_referencia', {desc: true})
       .limit(1)
       .single();
-
     const saldoAnterior = ultimo?.saldo_atual ?? 0;
     const saldoFinal = saldoAnterior + saldoMes;
 
@@ -249,13 +359,32 @@ async function fecharMesAutomatico(mes, ano) {
       saldo_mes: saldoMes,
       saldo_atual: saldoFinal
     }, { onConflict: ['matricula','mes_referencia','ano_referencia'] });
-  }
 
-  alert(`✅ Fechamento do mês ${mes}/${ano} concluído!`);
+    const benef = await calcularBeneficios(colab.matricula, mes, ano);
+    const { data: proximoMes } = await supabase
+      .from('banco_horas')
+      .select('total_vt, total_vr')
+      .eq('matricula', colab.matricula)
+      .eq('mes_referencia', mesSeguinte)
+      .eq('ano_referencia', anoSeguinte)
+      .maybeSingle();
+
+    const vtAcum = (proximoMes?.total_vt || 0) + benef.vt;
+    const vrAcum = (proximoMes?.total_vr || 0) + benef.vr;
+
+    await supabase.from('banco_horas').upsert({
+      matricula: colab.matricula,
+      mes_referencia: mesSeguinte,
+      ano_referencia: anoSeguinte,
+      dias_uteis: diasUteisProx,
+      total_vt: vtAcum,
+      total_vr: vrAcum
+    }, { onConflict: ['matricula','mes_referencia','ano_referencia'] });
+  }
+  alert(`✅ Fechamento ${mes}/${ano} concluído! Benefícios → ${mesSeguinte}/${anoSeguinte}`);
   listarBanco();
 }
 
-// --- Férias ---
 async function carregarFerias() {
   const {data} = await supabase.from('solicitacoes_ferias').select('*').order('criado_em',{desc:true});
   document.getElementById('tabela_ferias').innerHTML = data?.map(f=>`
@@ -273,7 +402,6 @@ async function alterarStatusFerias(id,st) {
   carregarFerias();
 }
 
-// --- Atestados ---
 async function carregarAtestados() {
   const {data} = await supabase.from('atestados').select('*').order('criado_em',{desc:true});
   document.getElementById('tabela_atestados').innerHTML = data?.map(a=>`
@@ -291,7 +419,6 @@ async function alterarStatusAtestado(id,st) {
   carregarAtestados();
 }
 
-// --- Comunicados ---
 async function enviarComunicado() {
   const {error} = await supabase.from('comunicados').insert({
     titulo: document.getElementById('com_titulo').value,
@@ -301,7 +428,6 @@ async function enviarComunicado() {
   alert(error ? 'Erro' : 'Publicado!');
 }
 
-// --- Inicialização ---
 document.addEventListener('DOMContentLoaded', ()=>{
   preencherDataAtual();
   carregarPontos();
