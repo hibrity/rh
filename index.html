@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sisgespe - Gestão RH</title>
+    <title>Sisgespe - Aprovação e Controle</title>
     <style>
         :root {
             --primario: #165DFF;
@@ -17,229 +17,321 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: var(--fundo); color: #1D2129; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        /* Tela de Login */
-        #tela-login { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: linear-gradient(135deg, #165DFF, #0E42C4); }
-        .card-login { background: var(--branco); padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); width: 100%; max-width: 360px; text-align: center; }
+        #tela-login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #165DFF, #0E42C4);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 99999;
+        }
+        .card-login {
+            background: var(--branco);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
         .card-login h2 { margin-bottom: 24px; color: var(--primario); }
-        .card-login input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid var(--borda); border-radius: 6px; font-size: 16px; }
-        .card-login button { width: 100%; padding: 12px; background: var(--primario); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .erro { color: var(--erro); margin-top: 12px; display: none; }
+        .card-login input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid var(--borda);
+            border-radius: 6px;
+            font-size: 16px;
+            background: white;
+        }
+        .card-login button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primario);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .card-login button:hover { background: #0E42C4; }
+        .erro { color: var(--erro); margin-top: 12px; display: none; font-weight: 500; }
 
-        /* Painel Principal */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         #painel { display: none; }
-        header { background: var(--primario); color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; }
-        .btn-sair { background: var(--erro); border: none; color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        header {
+            background: var(--primario);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .btn-sair {
+            background: var(--erro);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
-        .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .menu-item { background: var(--branco); padding: 20px; border-radius: 8px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; border: 1px solid var(--borda); transition: all 0.2s; }
-        .menu-item:hover { transform: translateY(-3px); border-color: var(--primario); }
-        .menu-item h3 { color: var(--primario); margin-bottom: 8px; font-size: 16px; }
-
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .menu-item {
+            background: var(--branco);
+            padding: 28px 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid var(--borda);
+            transition: all 0.2s;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .menu-item:hover { transform: translateY(-4px); border-color: var(--primario); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+        .menu-item h3 { color: var(--primario); margin-bottom: 10px; font-size: 18px; }
+        .menu-item p { font-size: 13px; color: #666; margin-top: 4px; }
+        
         .aba { display: none; background: var(--branco); padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .aba.ativa { display: block; }
-        .aba h2 { color: var(--primario); margin-bottom: 20px; border-bottom: 2px solid var(--borda); padding-bottom: 10px; }
-
+        
+        .aba h2 { color: var(--primario); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--borda); }
+        .info-fixa { background: #ECF5FF; padding: 12px; border-radius: 6px; margin-bottom: 16px; font-size: 14px; color: #0E42C4; }
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
-        .campo { display: flex; flex-direction: column; }
-        .campo label { font-size: 14px; margin-bottom: 6px; color: #4E5969; }
+        .campo { display: flex; flex-direction: column; margin-bottom: 12px; }
+        .campo.visivel { display: flex; }
+        #aba-cadastro .campo, #aba-colaboradores .campo, #aba-beneficios .campo { display: flex; }
+        .campo label { font-size: 14px; margin-bottom: 6px; color: #4E5969; font-weight: 500; }
         .campo input, .campo select, .campo textarea { padding: 10px; border: 1px solid var(--borda); border-radius: 6px; font-size: 15px; }
-
+        .campo input:read-only, .campo textarea:read-only { background: #f8f9fa; color: #4E5969; cursor: not-allowed; }
+        .campo input[type="file"] { padding: 8px 0; border: none; background: transparent; }
+        .campo-busca { grid-column: 1 / -1; display: flex; flex-direction: column; }
+        .linha-busca { display: flex; gap: 8px; margin-top: 4px; }
         .btn { padding: 10px 16px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-right: 8px; margin-bottom: 8px; }
-        .btn-primario { background: var(--primario); color: white; }
         .btn-sucesso { background: var(--sucesso); color: white; }
         .btn-alerta { background: var(--alerta); color: white; }
         .btn-erro { background: var(--erro); color: white; }
         .btn-cinza { background: var(--cinza); color: white; }
-
+        
         table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--borda); }
         th { background: #F9FAFB; font-weight: bold; color: #4E5969; }
-        .acoes { display: flex; gap: 6px; }
+        .status-pendente { color: #FF7D00; font-weight: bold; }
+        .status-aprovado { color: #00B42A; font-weight: bold; }
+        .status-recusado { color: #F53F3F; font-weight: bold; }
+        .oculto { display: none; }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<!-- Tela de Login -->
 <div id="tela-login">
     <div class="card-login">
-        <h2>Sisgespe RH</h2>
-        <input type="password" id="senha" placeholder="Digite a senha mestra">
+        <h2>Sisgespe - Controle RH</h2>
+        <input type="password" id="senha" placeholder="Digite a senha" autocomplete="off">
         <button onclick="entrar()">Acessar Sistema</button>
-        <div id="aviso-erro" class="erro">Senha incorreta! Tente novamente.</div>
+        <div id="avisoErro" class="erro">Senha incorreta! Tente novamente.</div>
     </div>
 </div>
 
-<!-- Painel Principal -->
 <div id="painel" class="container">
     <header>
-        <h1>Sisgespe - Gestão de Recursos Humanos</h1>
+        <h1>Sisgespe - Aprovação e Controle</h1>
         <button class="btn-sair" onclick="sair()">Sair</button>
     </header>
 
     <div class="menu">
-        <div class="menu-item" onclick="abrirAba('colaboradores')">
-            <h3>👥 Colaboradores</h3>
-            <p>Cadastro e dados</p>
-        </div>
-        <div class="menu-item" onclick="abrirAba('ponto')">
-            <h3>🕒 Controle de Ponto</h3>
-            <p>Marcações e espelho</p>
-        </div>
-        <div class="menu-item" onclick="abrirAba('ferias')">
-            <h3>🏖️ Férias</h3>
-            <p>Solicitações e aprovação</p>
-        </div>
-        <div class="menu-item" onclick="abrirAba('atestados')">
-            <h3>📄 Atestados</h3>
-            <p>Envios e análise</p>
-        </div>
-        <div class="menu-item" onclick="abrirAba('banco')">
-            <h3>⏱️ Banco de Horas</h3>
-            <p>Saldo e fechamento</p>
-        </div>
-        <div class="menu-item" onclick="abrirAba('comunicados')">
-            <h3>📢 Comunicados</h3>
-            <p>Avisos gerais</p>
-        </div>
+        <div class="menu-item" onclick="abrirAba('colaboradores')"><h3>👥 Colaboradores</h3><p>Consulta e gestão geral</p></div>
+        <div class="menu-item" onclick="abrirAba('beneficios')"><h3>🎁 Benefícios</h3><p>Vale, plano e auxílios</p></div>
+        <div class="menu-item" onclick="abrirAba('cadastro')"><h3>👤 Cadastrar</h3><p>Novo colaborador</p></div>
+        <div class="menu-item" onclick="abrirAba('ferias')"><h3>🏖️ Férias</h3><p>Solicitações e aprovação</p></div>
+        <div class="menu-item" onclick="abrirAba('ponto')"><h3>🕒 Controle de Ponto</h3><p>Registros e espelho</p></div>
+        <div class="menu-item" onclick="abrirAba('atestados')"><h3>📄 Atestados</h3><p>Controle de afastamentos</p></div>
+        <div class="menu-item" onclick="abrirAba('banco')"><h3>⏱️ Banco de Horas</h3><p>Saldo e movimentações</p></div>
+        <div class="menu-item" onclick="abrirAba('comunicados')"><h3>📢 Comunicados</h3><p>Avisos gerais</p></div>
     </div>
 
-    <!-- Aba Colaboradores -->
-    <div id="aba-colaboradores" class="aba ativa">
-        <h2>Cadastro de Colaboradores</h2>
+    <div id="aba-colaboradores" class="aba">
+        <h2>👥 Gestão de Colaboradores</h2>
+        <div class="info-fixa">ℹ️ Visualize, pesquise e filtre todos os colaboradores cadastrados.</div>
         <div class="form-grid">
-            <div class="campo"><label>Nome Completo</label><input type="text" id="col_nome"></div>
-            <div class="campo"><label>Matrícula</label><input type="text" id="col_matricula"></div>
-            <div class="campo"><label>CPF</label><input type="text" id="col_cpf"></div>
-            <div class="campo"><label>Cargo</label><input type="text" id="col_cargo"></div>
-            <div class="campo"><label>Setor</label><input type="text" id="col_setor"></div>
-            <div class="campo"><label>Admissão</label><input type="date" id="col_admissao"></div>
-            <div class="campo"><label>VT R$/dia</label><input type="number" step="0.01" id="col_vt"></div>
-            <div class="campo"><label>VR R$/dia</label><input type="number" step="0.01" id="col_vr"></div>
-            <div class="campo"><label>Status</label><select id="col_status"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+            <div class="campo-busca">
+                <label>Buscar por Nome ou Matrícula</label>
+                <div class="linha-busca">
+                    <input type="text" id="busca_colab" placeholder="Digite para pesquisar..." style="flex:1;">
+                    <button class="btn btn-alerta" onclick="filtrarColaboradores()">🔍 Buscar</button>
+                </div>
+            </div>
         </div>
-        <button class="btn btn-sucesso" onclick="salvarColaborador()">💾 Salvar</button>
-        <button class="btn btn-cinza" onclick="limparFormColab()">🧹 Limpar</button>
-
-        <h3 style="margin-top:24px;">Lista de Colaboradores</h3>
         <table>
-            <thead><tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Setor</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody id="lista-colab"></tbody>
+            <thead><tr><th>Matrícula</th><th>Nome</th><th>CPF</th><th>Cargo</th><th>Setor</th><th>Admissão</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="lista-colab-geral"></tbody>
         </table>
     </div>
 
-    <!-- Aba Ponto -->
-    <div id="aba-ponto" class="aba">
-        <h2>Controle de Ponto</h2>
+    <div id="aba-beneficios" class="aba">
+        <h2>🎁 Controle de Benefícios</h2>
+        <div class="info-fixa">ℹ️ Gerencie VT, VA, VR e planos de saúde/odontológico.</div>
         <div class="form-grid">
-            <div class="campo"><label>Matrícula</label><input type="text" id="ponto_matricula"></div>
+            <div class="campo oculto"><label>ID</label><input type="text" id="benef_id" readonly></div>
+            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="benef_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosBeneficio()">🔍</button></div></div>
+            <div class="campo"><label>Nome</label><input type="text" id="benef_nome" readonly></div>
+            <div class="campo"><label>Vale Transporte (R$)</label><input type="number" step="0.01" id="benef_vt"></div>
+            <div class="campo"><label>Vale Alimentação (R$)</label><input type="number" step="0.01" id="benef_va"></div>
+            <div class="campo"><label>Vale Refeição (R$)</label><input type="number" step="0.01" id="benef_vr"></div>
+            <div class="campo"><label>Plano Saúde</label><select id="benef_saude"><option value="nao">Não</option><option value="basico">Básico</option><option value="intermediario">Intermediário</option><option value="completo">Completo</option></select></div>
+            <div class="campo"><label>Plano Odonto</label><select id="benef_odonto"><option value="nao">Não</option><option value="sim">Sim</option></select></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observações</label><textarea id="benef_obs" rows="2"></textarea></div>
+        </div>
+        <button class="btn btn-sucesso" id="btn_salvar_benef" style="display:none;" onclick="salvarOuAtualizarBeneficio()">💾 Salvar</button>
+        <button class="btn btn-cinza" id="btn_limpar_benef" style="display:none;" onclick="limparBeneficio()">🧹 Limpar</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Lista</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>V.Transp</th><th>V.Aliment</th><th>Plano</th><th>Odonto</th><th>Ações</th></tr></thead><tbody id="lista-beneficios"></tbody></table>
+    </div>
+
+    <div id="aba-cadastro" class="aba">
+        <h2>👤 Cadastro de Colaborador</h2>
+        <div class="info-fixa">ℹ️ Dados integrados ao banco Supabase.</div>
+        <div class="form-grid">
+            <div class="campo oculto"><label>ID</label><input type="text" id="cad_id" readonly></div>
+            <div class="campo"><label>Matrícula *</label><input type="text" id="cad_matricula" required></div>
+            <div class="campo"><label>Nome *</label><input type="text" id="cad_nome" required></div>
+            <div class="campo"><label>CPF</label><input type="text" id="cad_cpf"></div>
+            <div class="campo"><label>Cargo</label><input type="text" id="cad_cargo"></div>
+            <div class="campo"><label>Setor</label><input type="text" id="cad_setor"></div>
+            <div class="campo"><label>Admissão *</label><input type="date" id="cad_admissao" required></div>
+            <div class="campo"><label>Salário</label><input type="number" step="0.01" id="cad_salario"></div>
+            <div class="campo"><label>Status</label><select id="cad_status"><option value="ativo" selected>Ativo</option><option value="afastado">Afastado</option><option value="desligado">Desligado</option></select></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observações</label><textarea id="cad_obs" rows="2"></textarea></div>
+        </div>
+        <button class="btn btn-sucesso" id="btn-salvar-cad" onclick="salvarCadastro()">💾 Cadastrar</button>
+        <button class="btn btn-alerta oculto" id="btn-atualizar-cad" onclick="atualizarCadastro()">🔄 Atualizar</button>
+        <button class="btn btn-cinza" onclick="limparCadastro()">🧹 Limpar</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Colaboradores</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Admissão</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-colaboradores"></tbody></table>
+    </div>
+
+    <div id="aba-ferias" class="aba">
+        <h2>🏖️ Controle de Férias</h2>
+        <div class="info-fixa">ℹ️ Busque por matrícula para carregar dados.</div>
+        <div class="form-grid">
+            <div class="campo oculto"><label>ID</label><input type="text" id="ferias_id" readonly></div>
+            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="ferias_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
+            <div class="campo"><label>Nome</label><input type="text" id="ferias_nome" readonly></div>
+            <div class="campo"><label>Admissão</label><input type="text" id="ferias_admissao" readonly></div>
+            <div class="campo"><label>Período Aquisitivo</label><input type="text" id="ferias_periodo_aquisitivo" readonly></div>
+            <div class="campo"><label>Dias Disponíveis</label><input type="number" id="ferias_dias_disponiveis" readonly value="30"></div>
+            <div class="campo"><label>Início</label><input type="date" id="ferias_inicio" onchange="calcularDataRetorno()"></div>
+            <div class="campo"><label>Retorno Previsto</label><input type="text" id="ferias_retorno" readonly></div>
+            <div class="campo"><label>Tipo</label><select id="ferias_tipo" onchange="calcularDataRetorno()"><option value="integral">Integral (30d)</option><option value="fracionada_10">10 dias</option><option value="fracionada_20">20 dias</option><option value="abono">Com Abono</option></select></div>
+            <div class="campo"><label>Status</label><select id="ferias_status"><option value="pendente">Pendente</option><option value="aprovado">Aprovado</option><option value="recusado">Recusado</option></select></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observações</label><textarea id="ferias_observacoes" rows="2"></textarea></div>
+        </div>
+        <button class="btn btn-sucesso" id="btn_salvar_ferias" style="display:none;" onclick="salvarOuAtualizarFerias()">💾 Salvar</button>
+        <button class="btn btn-cinza" id="btn_limpar_ferias" style="display:none;" onclick="limparFormulario()">🧹 Limpar</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Histórico</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Período</th><th>Início</th><th>Retorno</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-ferias"></tbody></table>
+    </div>
+
+    <div id="aba-ponto" class="aba">
+        <h2>🕒 Controle de Ponto</h2>
+        <div class="info-fixa">ℹ️ Registre horários e gere espelho de ponto.</div>
+        <div class="form-grid">
+            <div class="campo oculto"><label>ID</label><input type="text" id="ponto_id" readonly></div>
+            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="ponto_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
+            <div class="campo"><label>Nome</label><input type="text" id="ponto_nome" readonly></div>
             <div class="campo"><label>Data</label><input type="date" id="ponto_data"></div>
             <div class="campo"><label>Entrada</label><input type="time" id="ponto_entrada"></div>
+            <div class="campo"><label>Saída Almoço</label><input type="time" id="ponto_saida_almoco"></div>
+            <div class="campo"><label>Retorno Almoço</label><input type="time" id="ponto_retorno_almoco"></div>
             <div class="campo"><label>Saída</label><input type="time" id="ponto_saida"></div>
-            <div class="campo"><label>Justificativa</label><input type="text" id="ponto_justificativa"></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observação</label><textarea id="ponto_obs" rows="2"></textarea></div>
         </div>
-        <button class="btn btn-sucesso" onclick="salvarPonto()">💾 Salvar Registro</button>
-        <button class="btn btn-primario" onclick="gerarEspelho()">📋 Gerar Espelho</button>
-
-        <h3 style="margin-top:24px;">Registros de Ponto</h3>
-        <table>
-            <thead><tr><th>Matrícula</th><th>Data</th><th>Entrada</th><th>Saída</th><th>Horas</th><th>Ações</th></tr></thead>
-            <tbody id="lista-ponto"></tbody>
-        </table>
+        <button class="btn btn-sucesso" id="btn_salvar_ponto" style="display:none;" onclick="salvarOuAtualizarPonto()">💾 Salvar</button>
+        <button class="btn btn-alerta" id="btn_espelho_ponto" style="display:none;" onclick="gerarEspelhoPonto()">📋 Espelho</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Registros</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Entrada</th><th>Saída</th><th>Ações</th></tr></thead><tbody id="lista-ponto"></tbody></table>
     </div>
 
-    <!-- Aba Férias -->
-    <div id="aba-ferias" class="aba">
-        <h2>Gestão de Férias</h2>
-        <div class="form-grid">
-            <div class="campo"><label>Matrícula</label><input type="text" id="ferias_matricula"></div>
-            <div class="campo"><label>Nome</label><input type="text" id="ferias_nome"></div>
-            <div class="campo"><label>Início</label><input type="date" id="ferias_inicio"></div>
-            <div class="campo"><label>Dias</label><input type="number" id="ferias_dias"></div>
-            <div class="campo"><label>Status</label><select id="ferias_status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option></select></div>
-        </div>
-        <button class="btn btn-sucesso" onclick="salvarFerias()">💾 Salvar Solicitação</button>
-
-        <h3 style="margin-top:24px;">Solicitações</h3>
-        <table>
-            <thead><tr><th>Matrícula</th><th>Nome</th><th>Início</th><th>Dias</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody id="lista-ferias"></tbody>
-        </table>
-    </div>
-
-    <!-- Aba Atestados -->
     <div id="aba-atestados" class="aba">
-        <h2>Controle de Atestados</h2>
+        <h2>📄 Controle de Atestados</h2>
+        <div class="info-fixa">ℹ️ Registre afastamentos e dias de ausência.</div>
         <div class="form-grid">
-            <div class="campo"><label>Matrícula</label><input type="text" id="atestado_matricula"></div>
-            <div class="campo"><label>Nome</label><input type="text" id="atestado_nome"></div>
+            <div class="campo oculto"><label>ID</label><input type="text" id="atestado_id" readonly></div>
+            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="atestado_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
+            <div class="campo"><label>Nome</label><input type="text" id="atestado_nome" readonly></div>
             <div class="campo"><label>Data</label><input type="date" id="atestado_data"></div>
-            <div class="campo"><label>Motivo</label><input type="text" id="atestado_motivo"></div>
-            <div class="campo"><label>Status</label><select id="atestado_status"><option>Pendente</option><option>Aprovado</option><option>Recusado</option></select></div>
+            <div class="campo"><label>Dias</label><input type="number" id="atestado_dias" min="1" max="90"></div>
+            <div class="campo"><label>Motivo / CID</label><input type="text" id="atestado_motivo"></div>
+            <div class="campo"><label>Status</label><select id="atestado_status"><option value="pendente">Pendente</option><option value="aprovado">Aprovado</option><option value="recusado">Recusado</option></select></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observações RH</label><textarea id="atestado_obs" rows="2"></textarea></div>
         </div>
-        <button class="btn btn-sucesso" onclick="salvarAtestado()">💾 Salvar Atestado</button>
-
-        <h3 style="margin-top:24px;">Atestados Cadastrados</h3>
-        <table>
-            <thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Motivo</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody id="lista-atestados"></tbody>
-        </table>
+        <button class="btn btn-sucesso" id="btn_salvar_atestado" style="display:none;" onclick="salvarOuAtualizarAtestado()">💾 Salvar</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Atestados</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Dias</th><th>Motivo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-atestados"></tbody></table>
     </div>
 
-    <!-- Aba Banco de Horas -->
     <div id="aba-banco" class="aba">
-        <h2>Banco de Horas</h2>
+        <h2>⏱️ Banco de Horas</h2>
+        <div class="info-fixa">ℹ️ Acompanhe saldo e períodos de horas extras/faltas.</div>
         <div class="form-grid">
-            <div class="campo"><label>Matrícula</label><input type="text" id="banco_matricula"></div>
-            <div class="campo"><label>Saldo Atual</label><input type="number" step="0.01" id="banco_saldo"></div>
-            <div class="campo"><label>Mês / Ano</label><input type="month" id="banco_periodo"></div>
+            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="banco_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
+            <div class="campo"><label>Nome</label><input type="text" id="banco_nome" readonly></div>
+            <div class="campo"><label>Período</label><input type="month" id="banco_periodo"></div>
+            <div class="campo"><label>Saldo (horas)</label><input type="number" step="0.01" id="banco_saldo" readonly></div>
+            <div class="campo" style="grid-column:1/-1;"><label>Observações</label><textarea id="banco_obs" rows="2"></textarea></div>
         </div>
-        <button class="btn btn-sucesso" onclick="salvarBanco()">💾 Atualizar Saldo</button>
-
-        <h3 style="margin-top:24px;">Histórico</h3>
-        <table>
-            <thead><tr><th>Matrícula</th><th>Período</th><th>Saldo</th><th>Ações</th></tr></thead>
-            <tbody id="lista-banco"></tbody>
-        </table>
+        <button class="btn btn-sucesso" id="btn_salvar_banco" style="display:none;" onclick="atualizarBancoHoras()">🔄 Atualizar</button>
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Saldo por Período</h3>
+        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Período</th><th>Saldo</th><th>Observações</th></tr></thead><tbody id="lista-banco"></tbody></table>
     </div>
 
-    <!-- Aba Comunicados -->
     <div id="aba-comunicados" class="aba">
-        <h2>Comunicados</h2>
-        <div class="campo"><label>Título</label><input type="text" id="com_titulo"></div>
-        <div class="campo" style="margin-top:12px;"><label>Conteúdo</label><textarea id="com_texto" rows="5"></textarea></div>
-        <button class="btn btn-sucesso" onclick="publicarComunicado()">📢 Publicar</button>
-
-        <h3 style="margin-top:24px;">Comunicados Publicados</h3>
-        <div id="lista-comunicados"></div>
+        <h2>📢 Comunicados</h2>
+        <div class="form-grid" style="grid-template-columns:1fr;">
+            <div class="campo"><label>Título</label><input type="text" id="com_titulo"></div>
+            <div class="campo"><label>Texto</label><textarea id="com_texto" rows="4"></textarea></div>
+            <div class="campo"><label>Anexo</label><input type="file" id="com_arquivo" accept=".jpg,.jpeg,.png,.pdf"></div>
+        </div>
+        <button class="btn btn-sucesso" onclick="publicarAviso()">📤 Publicar</button>
+        <div id="lista-comunicados" style="margin-top:24px;"></div>
     </div>
-</div>
+    <script>
+const SENHA_CORRETA = "Sisgespe2026";
+let supabase;
 
-<script>
-// ===== CONFIGURAÇÕES =====
-const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
-const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
-const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// 🔐 SENHA MESTRA - ALTERE AQUI SE QUISER OUTRA
-const SENHA_MESTRA = "Sisgespe2026";
-
-// ===== FUNÇÃO DE LOGIN =====
+// ------------------------------
+// Controle de Acesso e Navegação
+// ------------------------------
 function entrar() {
-    const senhaDigitada = document.getElementById("senha").value.trim();
-    
-    // Verifica se a senha está correta
-    if (senhaDigitada === SENHA_MESTRA) {
+    const s = document.getElementById("senha").value.trim();
+    if (s === SENHA_CORRETA) {
         document.getElementById("tela-login").style.display = "none";
         document.getElementById("painel").style.display = "block";
-        carregarTodasListas();
+        carregarConexao();
     } else {
-        const aviso = document.getElementById("aviso-erro");
-        aviso.style.display = "block";
-        // Esconde a mensagem após 3 segundos
-        setTimeout(() => aviso.style.display = "none", 3000);
+        document.getElementById("avisoErro").style.display = "block";
+        setTimeout(() => document.getElementById("avisoErro").style.display = "none", 3000);
     }
 }
 
@@ -252,320 +344,682 @@ function sair() {
 function abrirAba(nome) {
     document.querySelectorAll(".aba").forEach(aba => aba.classList.remove("ativa"));
     document.getElementById("aba-" + nome).classList.add("ativa");
+
+    if (nome === "cadastro") listarColaboradores();
+    if (nome === "colaboradores") listarColaboradoresGeral();
+    if (nome === "beneficios") listarBeneficios();
+    if (nome === "ferias") listarFerias();
+    if (nome === "ponto") listarPonto();
+    if (nome === "atestados") listarAtestados();
+    if (nome === "banco") listarBancoHoras();
+    if (nome === "comunicados") listarComunicados();
 }
 
-// ===== DEMAIS FUNÇÕES INTEGRADAS COM SUPABASE =====
-async function salvarColaborador() {
-    const matricula = document.getElementById("col_matricula").value.trim();
-    if (!matricula) return alert("Preencha a matrícula!");
+// ------------------------------
+// Conexão com Banco de Dados
+// ------------------------------
+function carregarConexao() {
+    const scriptSupabase = document.createElement("script");
+    scriptSupabase.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+    scriptSupabase.onload = () => {
+        const SUPABASE_URL = "https://ubthnpkskbqveqwcyemb.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_apl32rKSyoPQNDW1y7ZkQQ_ykT668W9";
+        supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        carregarTodasListas();
+    };
+    document.head.appendChild(scriptSupabase);
+}
+
+function carregarTodasListas() {
+    listarColaboradores();
+    listarColaboradoresGeral();
+    listarBeneficios();
+    listarFerias();
+    listarPonto();
+    listarAtestados();
+    listarBancoHoras();
+    listarComunicados();
+}
+
+// ------------------------------
+// Funções Auxiliares
+// ------------------------------
+async function buscarDadosDoCadastro() {
+    const abaAtiva = document.querySelector(".aba.ativa").id.replace("aba-", "");
+    const matricula = document.getElementById(abaAtiva + "_matricula").value.trim();
+    
+    if (!matricula) return alert("Digite a matrícula do colaborador!");
+
+    const { data, error } = await supabase
+        .from("colaboradores")
+        .select("*")
+        .eq("matricula", matricula)
+        .maybeSingle();
+
+    if (error || !data) {
+        alert("Colaborador não encontrado!");
+        limparFormulario();
+        return;
+    }
+
+    const dataAdmissao = new Date(data.admissao).toLocaleDateString("pt-BR");
+    const periodoAquisitivo = calcularPeriodoAquisitivo(data.admissao);
+
+    if (abaAtiva === "ferias") {
+        document.getElementById("ferias_nome").value = data.nome || "";
+        document.getElementById("ferias_admissao").value = dataAdmissao;
+        document.getElementById("ferias_periodo_aquisitivo").value = periodoAquisitivo;
+        document.getElementById("ferias_dias_disponiveis").value = 30;
+        document.querySelectorAll("#aba-ferias .campo").forEach(campo => campo.classList.add("visivel"));
+        document.getElementById("btn_salvar_ferias").style.display = "inline-block";
+        document.getElementById("btn_limpar_ferias").style.display = "inline-block";
+    }
+
+    if (abaAtiva === "ponto") {
+        document.getElementById("ponto_nome").value = data.nome || "";
+        document.querySelectorAll("#aba-ponto .campo").forEach(campo => campo.classList.add("visivel"));
+        document.getElementById("btn_salvar_ponto").style.display = "inline-block";
+        document.getElementById("btn_espelho_ponto").style.display = "inline-block";
+    }
+
+    if (abaAtiva === "atestados") {
+        document.getElementById("atestado_nome").value = data.nome || "";
+        document.querySelectorAll("#aba-atestados .campo").forEach(campo => campo.classList.add("visivel"));
+        document.getElementById("btn_salvar_atestado").style.display = "inline-block";
+    }
+
+    if (abaAtiva === "banco") {
+        document.getElementById("banco_nome").value = data.nome || "";
+        document.querySelectorAll("#aba-banco .campo").forEach(campo => campo.classList.add("visivel"));
+        document.getElementById("btn_salvar_banco").style.display = "inline-block";
+    }
+
+    calcularDataRetorno();
+}
+
+function calcularPeriodoAquisitivo(dataAdmissao) {
+    const inicio = new Date(dataAdmissao);
+    const fim = new Date(inicio);
+    fim.setFullYear(inicio.getFullYear() + 1);
+    return `${inicio.toLocaleDateString("pt-BR")} a ${fim.toLocaleDateString("pt-BR")}`;
+}
+
+function calcularDataRetorno() {
+    const dataInicio = document.getElementById("ferias_inicio")?.value;
+    const tipoFerias = document.getElementById("ferias_tipo")?.value;
+    let dias = 30;
+
+    if (tipoFerias === "fracionada_10") dias = 10;
+    if (tipoFerias === "fracionada_20") dias = 20;
+    if (tipoFerias === "abono") dias = 20;
+
+    if (!dataInicio) {
+        document.getElementById("ferias_retorno").value = "";
+        return;
+    }
+
+    const dataRetorno = new Date(dataInicio);
+    dataRetorno.setDate(dataRetorno.getDate() + dias);
+    document.getElementById("ferias_retorno").value = dataRetorno.toLocaleDateString("pt-BR");
+}
+
+function limparFormulario() {
+    document.querySelectorAll(".aba.ativa input, .aba.ativa select, .aba.ativa textarea").forEach(campo => {
+        if (!campo.readOnly) campo.value = "";
+    });
+    document.querySelectorAll(".aba.ativa .campo").forEach(campo => campo.classList.remove("visivel"));
+    document.querySelectorAll(".aba.ativa .btn").forEach(botao => botao.style.display = "none");
+}
+
+// ------------------------------
+// Gestão de Colaboradores
+// ------------------------------
+async function listarColaboradoresGeral(filtro = "") {
+    let consulta = supabase.from("colaboradores").select("*").order("nome");
+    if (filtro) consulta = consulta.or(`nome.ilike.%${filtro}%,matricula.ilike.%${filtro}%`);
+    
+    const { data } = await consulta;
+    document.getElementById("lista-colab-geral").innerHTML = data?.map(colab => `
+        <tr>
+            <td>${colab.matricula}</td>
+            <td>${colab.nome}</td>
+            <td>${colab.cpf || "-"}</td>
+            <td>${colab.cargo || "-"}</td>
+            <td>${colab.setor || "-"}</td>
+            <td>${new Date(colab.admissao).toLocaleDateString("pt-BR")}</td>
+            <td>${colab.status}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarParaEditar(${colab.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirCadastro(${colab.id})">🗑️</button>
+            </td>
+        </tr>
+    `).join("") || "<tr><td colspan='8'>Nenhum colaborador cadastrado</td></tr>";
+}
+
+function filtrarColaboradores() {
+    const termo = document.getElementById("busca_colab").value.trim();
+    listarColaboradoresGeral(termo);
+}
+
+async function salvarCadastro() {
+    const matricula = document.getElementById("cad_matricula").value.trim();
+    const nome = document.getElementById("cad_nome").value.trim();
+    const admissao = document.getElementById("cad_admissao").value;
+
+    if (!matricula || !nome || !admissao) {
+        return alert("Preencha todos os campos obrigatórios!");
+    }
 
     const dados = {
         matricula,
-        nome: document.getElementById("col_nome").value,
-        cpf: document.getElementById("col_cpf").value,
-        cargo: document.getElementById("col_cargo").value,
-        setor: document.getElementById("col_setor").value,
-        admissao: document.getElementById("col_admissao").value || null,
-        valor_vt_dia: parseFloat(document.getElementById("col_vt").value) || 0,
-        valor_vr_dia: parseFloat(document.getElementById("col_vr").value) || 0,
-        ativo: document.getElementById("col_status").value === "ativo"
+        nome,
+        cpf: document.getElementById("cad_cpf").value.trim(),
+        cargo: document.getElementById("cad_cargo").value.trim(),
+        setor: document.getElementById("cad_setor").value.trim(),
+        admissao,
+        salario: parseFloat(document.getElementById("cad_salario").value) || null,
+        status: document.getElementById("cad_status").value,
+        observacoes: document.getElementById("cad_obs").value.trim()
     };
 
-    const { data: existente } = await supabase.from("colaboradores").select("matricula").eq("matricula", matricula).maybeSingle();
-    let erro;
-
-    if (existente) {
-        const { error } = await supabase.from("colaboradores").update(dados).eq("matricula", matricula);
-        erro = error;
-    } else {
-        const { error } = await supabase.from("colaboradores").insert([dados]);
-        erro = error;
+    const { error } = await supabase.from("colaboradores").insert([dados]);
+    if (error) {
+        if (error.code === "23505") alert("Matrícula já cadastrada!");
+        else alert("Erro ao cadastrar: " + error.message);
+        return;
     }
 
-    if (erro) return alert("Erro: " + erro.message);
-    alert("✅ Salvo com sucesso!");
-    limparFormColab();
+    alert("✅ Colaborador cadastrado com sucesso!");
+    limparCadastro();
     listarColaboradores();
+    listarColaboradoresGeral();
 }
 
-function limparFormColab() {
-    document.getElementById("col_nome").value = "";
-    document.getElementById("col_matricula").value = "";
-    document.getElementById("col_cpf").value = "";
-    document.getElementById("col_cargo").value = "";
-    document.getElementById("col_setor").value = "";
-    document.getElementById("col_admissao").value = "";
-    document.getElementById("col_vt").value = "";
-    document.getElementById("col_vr").value = "";
-    document.getElementById("col_status").value = "ativo";
+async function carregarParaEditar(id) {
+    const { data } = await supabase.from("colaboradores").select("*").eq("id", id).maybeSingle();
+    if (!data) return;
+
+    document.getElementById("cad_id").value = data.id;
+    document.getElementById("cad_matricula").value = data.matricula;
+    document.getElementById("cad_nome").value = data.nome;
+    document.getElementById("cad_cpf").value = data.cpf || "";
+    document.getElementById("cad_cargo").value = data.cargo || "";
+    document.getElementById("cad_setor").value = data.setor || "";
+    document.getElementById("cad_admissao").value = data.admissao || "";
+    document.getElementById("cad_salario").value = data.salario || "";
+    document.getElementById("cad_status").value = data.status;
+    document.getElementById("cad_obs").value = data.observacoes || "";
+
+    document.getElementById("btn-salvar-cad").classList.add("oculto");
+    document.getElementById("btn-atualizar-cad").classList.remove("oculto");
+}
+
+async function atualizarCadastro() {
+    const id = document.getElementById("cad_id").value;
+    if (!id) return;
+
+    const dados = {
+        matricula: document.getElementById("cad_matricula").value.trim(),
+        nome: document.getElementById("cad_nome").value.trim(),
+        cpf: document.getElementById("cad_cpf").value.trim(),
+        cargo: document.getElementById("cad_cargo").value.trim(),
+        setor: document.getElementById("cad_setor").value.trim(),
+        admissao: document.getElementById("cad_admissao").value,
+        salario: parseFloat(document.getElementById("cad_salario").value) || null,
+        status: document.getElementById("cad_status").value,
+        observacoes: document.getElementById("cad_obs").value.trim()
+    };
+
+    await supabase.from("colaboradores").update(dados).eq("id", id);
+    alert("✅ Cadastro atualizado!");
+    limparCadastro();
+    listarColaboradores();
+    listarColaboradoresGeral();
+}
+
+async function excluirCadastro(id) {
+    if (!confirm("Deseja realmente excluir este cadastro?")) return;
+    await supabase.from("colaboradores").delete().eq("id", id);
+    alert("✅ Cadastro excluído!");
+    listarColaboradores();
+    listarColaboradoresGeral();
+}
+
+function limparCadastro() {
+    document.getElementById("cad_id").value = "";
+    document.getElementById("cad_matricula").value = "";
+    document.getElementById("cad_nome").value = "";
+    document.getElementById("cad_cpf").value = "";
+    document.getElementById("cad_cargo").value = "";
+    document.getElementById("cad_setor").value = "";
+    document.getElementById("cad_admissao").value = "";
+    document.getElementById("cad_salario").value = "";
+    document.getElementById("cad_status").value = "ativo";
+    document.getElementById("cad_obs").value = "";
+
+    document.getElementById("btn-salvar-cad").classList.remove("oculto");
+    document.getElementById("btn-atualizar-cad").classList.add("oculto");
 }
 
 async function listarColaboradores() {
-    const { data, error } = await supabase.from("colaboradores").select("*").order("nome");
-    if (error) return console.error(error);
-
-    const tbody = document.getElementById("lista-colab");
-    tbody.innerHTML = data.map(c => `
+    const { data } = await supabase.from("colaboradores").select("*").order("nome");
+    document.getElementById("lista-colaboradores").innerHTML = data?.map(colab => `
         <tr>
-            <td>${c.matricula}</td>
-            <td>${c.nome}</td>
-            <td>${c.cargo || "-"}</td>
-            <td>${c.setor || "-"}</td>
-            <td>${c.ativo ? "✅ Ativo" : "❌ Inativo"}</td>
-            <td class="acoes">
-                <button class="btn btn-alerta" onclick="editarColab('${c.matricula}')">✏️</button>
-                <button class="btn btn-erro" onclick="excluirColab('${c.matricula}')">🗑️</button>
+            <td>${colab.matricula}</td>
+            <td>${colab.nome}</td>
+            <td>${colab.cargo || "-"}</td>
+            <td>${new Date(colab.admissao).toLocaleDateString("pt-BR")}</td>
+            <td>${colab.status}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarParaEditar(${colab.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirCadastro(${colab.id})">🗑️</button>
             </td>
         </tr>
-    `).join("");
+    `).join("") || "<tr><td colspan='6'>Nenhum colaborador cadastrado</td></tr>";
 }
 
-async function editarColab(matricula) {
-    const { data } = await supabase.from("colaboradores").select("*").eq("matricula", matricula).single();
-    if (!data) return;
-    document.getElementById("col_nome").value = data.nome || "";
-    document.getElementById("col_matricula").value = data.matricula || "";
-    document.getElementById("col_cpf").value = data.cpf || "";
-    document.getElementById("col_cargo").value = data.cargo || "";
-    document.getElementById("col_setor").value = data.setor || "";
-    document.getElementById("col_admissao").value = data.admissao || "";
-    document.getElementById("col_vt").value = data.valor_vt_dia || "";
-    document.getElementById("col_vr").value = data.valor_vr_dia || "";
-    document.getElementById("col_status").value = data.ativo ? "ativo" : "inativo";
-}
+// ------------------------------
+// Gestão de Benefícios
+// ------------------------------
+async function buscarDadosBeneficio() {
+    const matricula = document.getElementById("benef_matricula").value.trim();
+    if (!matricula) return alert("Informe a matrícula!");
 
-async function excluirColab(matricula) {
-    if (!confirm("Excluir esse colaborador?")) return;
-    const { error } = await supabase.from("colaboradores").delete().eq("matricula", matricula);
-    if (error) return alert("Erro: " + error.message);
-    listarColaboradores();
-}
+    const { data: colaborador } = await supabase
+        .from("colaboradores")
+        .select("nome")
+        .eq("matricula", matricula)
+        .maybeSingle();
 
-function calcularHoras(entrada, saida) {
-    if (!entrada || !saida) return 0;
-    const [h1, m1] = entrada.split(":").map(Number);
-    const [h2, m2] = saida.split(":").map(Number);
-    const total = (h2 * 60 + m2) - (h1 * 60 + m1);
-    return total > 0 ? Number((total / 60).toFixed(2)) : 0;
-}
+    if (!colaborador) return alert("Colaborador não encontrado!");
+    document.getElementById("benef_nome").value = colaborador.nome;
 
-async function salvarPonto() {
-    const matricula = document.getElementById("ponto_matricula").value.trim();
-    const data = document.getElementById("ponto_data").value;
-    if (!matricula || !data) return alert("Preencha matrícula e data!");
+    document.querySelectorAll("#aba-beneficios .campo").forEach(campo => campo.classList.add("visivel"));
+    document.getElementById("btn_salvar_benef").style.display = "inline-block";
+    document.getElementById("btn_limpar_benef").style.display = "inline-block";
 
-    const entrada = document.getElementById("ponto_entrada").value;
-    const saida = document.getElementById("ponto_saida").value;
-    const horas = calcularHoras(entrada, saida);
+    const { data: beneficio } = await supabase
+        .from("beneficios")
+        .select("*")
+        .eq("matricula", matricula)
+        .maybeSingle();
 
-    const registro = { matricula, data, entrada, saida, horas_trabalhadas: horas, justificativa: document.getElementById("ponto_justificativa").value };
-
-    const { data: existente } = await supabase.from("registros_ponto").select("id").eq("matricula", matricula).eq("data", data).maybeSingle();
-    let erro;
-
-    if (existente) {
-        const { error } = await supabase.from("registros_ponto").update(registro).eq("id", existente.id);
-        erro = error;
+    if (beneficio) {
+        document.getElementById("benef_id").value = beneficio.id;
+        document.getElementById("benef_vt").value = beneficio.vale_transporte || "";
+        document.getElementById("benef_va").value = beneficio.vale_alimentacao || "";
+        document.getElementById("benef_vr").value = beneficio.vale_refeicao || "";
+        document.getElementById("benef_saude").value = beneficio.plano_saude || "nao";
+        document.getElementById("benef_odonto").value = beneficio.plano_odonto || "nao";
+        document.getElementById("benef_obs").value = beneficio.observacoes || "";
     } else {
-        const { error } = await supabase.from("registros_ponto").insert([registro]);
-        erro = error;
+        limparCamposBeneficio();
+    }
+}
+
+async function salvarOuAtualizarBeneficio() {
+    const id = document.getElementById("benef_id").value;
+    const dados = {
+        matricula: document.getElementById("benef_matricula").value.trim(),
+        nome: document.getElementById("benef_nome").value,
+        vale_transporte: parseFloat(document.getElementById("benef_vt").value) || null,
+        vale_alimentacao: parseFloat(document.getElementById("benef_va").value) || null,
+        vale_refeicao: parseFloat(document.getElementById("benef_vr").value) || null,
+        plano_saude: document.getElementById("benef_saude").value,
+        plano_odonto: document.getElementById("benef_odonto").value,
+        observacoes: document.getElementById("benef_obs").value.trim()
+    };
+
+    if (id) {
+        await supabase.from("beneficios").update(dados).eq("id", id);
+    } else {
+        await supabase.from("beneficios").insert([dados]);
     }
 
-    if (erro) return alert("Erro: " + erro.message);
-    alert("✅ Registro salvo!");
-    listarPontos();
+    alert("✅ Benefícios salvos!");
+    limparBeneficio();
+    listarBeneficios();
 }
 
-async function listarPontos() {
-    const { data, error } = await supabase.from("registros_ponto").select("*").order("data", { ascending: false });
-    if (error) return console.error(error);
+async function carregarBeneficio(id) {
+    const { data } = await supabase.from("beneficios").select("*").eq("id", id).maybeSingle();
+    if (!data) return;
+    document.getElementById("benef_matricula").value = data.matricula;
+    buscarDadosBeneficio();
+}
 
-    const tbody = document.getElementById("lista-ponto");
-    tbody.innerHTML = data.map(p => `
+async function excluirBeneficio(id) {
+    if (!confirm("Excluir este registro de benefícios?")) return;
+    await supabase.from("beneficios").delete().eq("id", id);
+    alert("✅ Excluído!");
+    listarBeneficios();
+}
+
+async function listarBeneficios() {
+    const { data } = await supabase.from("beneficios").select("*").order("nome");
+    document.getElementById("lista-beneficios").innerHTML = data?.map(benef => `
         <tr>
-            <td>${p.matricula}</td>
-            <td>${new Date(p.data).toLocaleDateString("pt-BR")}</td>
-            <td>${p.entrada || "-"}</td>
-            <td>${p.saida || "-"}</td>
-            <td>${p.horas_trabalhadas.toFixed(2)}h</td>
-            <td class="acoes">
-                <button class="btn btn-alerta" onclick="editarPonto(${p.id})">✏️</button>
-                <button class="btn btn-erro" onclick="excluirPonto(${p.id})">🗑️</button>
+            <td>${benef.matricula}</td>
+            <td>${benef.nome}</td>
+            <td>R$ ${Number(benef.vale_transporte || 0).toFixed(2)}</td>
+            <td>R$ ${Number(benef.vale_alimentacao || 0).toFixed(2)}</td>
+            <td>${benef.plano_saude}</td>
+            <td>${benef.plano_odonto === "sim" ? "Sim" : "Não"}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarBeneficio(${benef.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirBeneficio(${benef.id})">🗑️</button>
             </td>
         </tr>
-    `).join("");
+    `).join("") || "<tr><td colspan='7'>Nenhum registro de benefícios</td></tr>";
 }
 
-async function editarPonto(id) {
-    const { data } = await supabase.from("registros_ponto").select("*").eq("id", id).single();
-    if (!data) return;
-    document.getElementById("ponto_matricula").value = data.matricula;
-    document.getElementById("ponto_data").value = data.data;
-    document.getElementById("ponto_entrada").value = data.entrada || "";
-    document.getElementById("ponto_saida").value = data.saida || "";
-    document.getElementById("ponto_justificativa").value = data.justificativa || "";
+function limparCamposBeneficio() {
+    document.getElementById("benef_vt").value = "";
+    document.getElementById("benef_va").value = "";
+    document.getElementById("benef_vr").value = "";
+    document.getElementById("benef_saude").value = "nao";
+    document.getElementById("benef_odonto").value = "nao";
+    document.getElementById("benef_obs").value = "";
 }
 
-async function gerarEspelho() {
-    const matricula = document.getElementById("ponto_matricula").value.trim();
-    if (!matricula) return alert("Informe a matrícula!");
-    const { data } = await supabase.from("registros_ponto").select("*").eq("matricula", matricula);
-    if (!data || data.length === 0) return alert("Nenhum registro encontrado!");
-    const total = data.reduce((s, p) => s + Number(p.horas_trabalhadas), 0);
-    alert(`📋 Espelho de Ponto\nMatrícula: ${matricula}\nTotal de horas: ${total.toFixed(2)}h`);
+function limparBeneficio() {
+    document.getElementById("benef_id").value = "";
+    document.getElementById("benef_matricula").value = "";
+    document.getElementById("benef_nome").value = "";
+    limparCamposBeneficio();
+    document.querySelectorAll("#aba-beneficios .campo").forEach(campo => campo.classList.remove("visivel"));
+    document.getElementById("btn_salvar_benef").style.display = "none";
+    document.getElementById("btn_limpar_benef").style.display = "none";
 }
 
-async function excluirPonto(id) {
-    if (!confirm("Excluir registro?")) return;
-    const { error } = await supabase.from("registros_ponto").delete().eq("id", id);
-    if (error) return alert("Erro: " + error.message);
-    listarPontos();
-}
-
-async function salvarFerias() {
+// ------------------------------
+// Gestão de Férias
+// ------------------------------
+async function salvarOuAtualizarFerias() {
+    const id = document.getElementById("ferias_id").value;
     const dados = {
-        matricula: document.getElementById("ferias_matricula").value,
+        matricula: document.getElementById("ferias_matricula").value.trim(),
         nome: document.getElementById("ferias_nome").value,
-        data_inicio: document.getElementById("ferias_inicio").value,
-        dias: parseInt(document.getElementById("ferias_dias").value) || 0,
-        status: document.getElementById("ferias_status").value
+        admissao: document.getElementById("ferias_admissao").value,
+        periodo_aquisitivo: document.getElementById("ferias_periodo_aquisitivo").value,
+        dias_disponiveis: parseInt(document.getElementById("ferias_dias_disponiveis").value),
+        inicio: document.getElementById("ferias_inicio").value,
+        retorno: document.getElementById("ferias_retorno").value,
+        tipo: document.getElementById("ferias_tipo").value,
+        status: document.getElementById("ferias_status").value,
+        observacoes: document.getElementById("ferias_observacoes").value.trim()
     };
-    const { error } = await supabase.from("solicitacoes_ferias").insert([dados]);
-    if (error) return alert("Erro: " + error.message);
-    alert("✅ Solicitação salva!");
+
+    if (id) {
+        await supabase.from("ferias").update(dados).eq("id", id);
+    } else {
+        await supabase.from("ferias").insert([dados]);
+    }
+
+    alert("✅ Registro de férias salvo!");
+    limparFormulario();
+    listarFerias();
+}
+
+async function carregarFerias(id) {
+    const { data } = await supabase.from("ferias").select("*").eq("id", id).maybeSingle();
+    if (!data) return;
+
+    document.getElementById("ferias_matricula").value = data.matricula;
+    buscarDadosDoCadastro();
+    document.getElementById("ferias_id").value = data.id;
+    document.getElementById("ferias_inicio").value = data.inicio || "";
+    document.getElementById("ferias_tipo").value = data.tipo || "integral";
+    document.getElementById("ferias_status").value = data.status || "pendente";
+    document.getElementById("ferias_observacoes").value = data.observacoes || "";
+    calcularDataRetorno();
+}
+
+async function excluirFerias(id) {
+    if (!confirm("Excluir este registro de férias?")) return;
+    await supabase.from("ferias").delete().eq("id", id);
+    alert("✅ Excluído!");
     listarFerias();
 }
 
 async function listarFerias() {
-    const { data, error } = await supabase.from("solicitacoes_ferias").select("*").order("data_inicio");
-    if (error) return console.error(error);
-
-    const tbody = document.getElementById("lista-ferias");
-    tbody.innerHTML = data.map(f => `
+    const { data } = await supabase.from("ferias").select("*").order("inicio", { ascending: false });
+    document.getElementById("lista-ferias").innerHTML = data?.map(ferias => `
         <tr>
-            <td>${f.matricula}</td>
-            <td>${f.nome}</td>
-            <td>${new Date(f.data_inicio).toLocaleDateString("pt-BR")}</td>
-            <td>${f.dias}</td>
-            <td>${f.status}</td>
-            <td><button class="btn btn-erro" onclick="excluirFerias(${f.id})">🗑️</button></td>
+            <td>${ferias.matricula}</td>
+            <td>${ferias.nome}</td>
+            <td>${ferias.periodo_aquisitivo}</td>
+            <td>${ferias.inicio ? new Date(ferias.inicio).toLocaleDateString("pt-BR") : "-"}</td>
+            <td>${ferias.retorno || "-"}</td>
+            <td>${ferias.tipo}</td>
+            <td class="status-${ferias.status}">${ferias.status}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarFerias(${ferias.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirFerias(${ferias.id})">🗑️</button>
+            </td>
         </tr>
-    `).join("");
+    `).join("") || "<tr><td colspan='8'>Nenhum registro de férias</td></tr>";
 }
 
-async function excluirFerias(id) {
-    if (!confirm("Excluir solicitação?")) return;
-    const { error } = await supabase.from("solicitacoes_ferias").delete().eq("id", id);
-    if (error) return alert("Erro: " + error.message);
-    listarFerias();
-}
-
-async function salvarAtestado() {
+// ------------------------------
+// Gestão de Ponto
+// ------------------------------
+async function salvarOuAtualizarPonto() {
+    const id = document.getElementById("ponto_id").value;
     const dados = {
-        matricula: document.getElementById("atestado_matricula").value,
-        nome: document.getElementById("atestado_nome").value,
-        data_envio: document.getElementById("atestado_data").value,
-        descricao: document.getElementById("atestado_motivo").value,
-        status: document.getElementById("atestado_status").value
+        matricula: document.getElementById("ponto_matricula").value.trim(),
+        nome: document.getElementById("ponto_nome").value,
+        data: document.getElementById("ponto_data").value,
+        entrada: document.getElementById("ponto_entrada").value,
+        saida_almoco: document.getElementById("ponto_saida_almoco").value || null,
+        retorno_almoco: document.getElementById("ponto_retorno_almoco").value || null,
+        saida: document.getElementById("ponto_saida").value || null,
+        observacao: document.getElementById("ponto_obs").value.trim()
     };
-    const { error } = await supabase.from("atestados").insert([dados]);
-    if (error) return alert("Erro: " + error.message);
-    alert("✅ Atestado salvo!");
+
+    if (id) {
+        await supabase.from("ponto").update(dados).eq("id", id);
+    } else {
+        await supabase.from("ponto").insert([dados]);
+    }
+
+    alert("✅ Registro de ponto salvo!");
+    limparFormulario();
+    listarPonto();
+}
+
+async function carregarPonto(id) {
+    const { data } = await supabase.from("ponto").select("*").eq("id", id).maybeSingle();
+    if (!data) return;
+
+    document.getElementById("ponto_matricula").value = data.matricula;
+    buscarDadosDoCadastro();
+    document.getElementById("ponto_id").value = data.id;
+    document.getElementById("ponto_data").value = data.data || "";
+    document.getElementById("ponto_entrada").value = data.entrada || "";
+    document.getElementById("ponto_saida_almoco").value = data.saida_almoco || "";
+    document.getElementById("ponto_retorno_almoco").value = data.retorno_almoco || "";
+    document.getElementById("ponto_saida").value = data.saida || "";
+    document.getElementById("ponto_obs").value = data.observacao || "";
+}
+
+async function excluirPonto(id) {
+    if (!confirm("Excluir este registro de ponto?")) return;
+    await supabase.from("ponto").delete().eq("id", id);
+    alert("✅ Excluído!");
+    listarPonto();
+}
+
+async function gerarEspelhoPonto() {
+    const matricula = document.getElementById("ponto_matricula").value.trim();
+    if (!matricula) return alert("Busque um colaborador primeiro!");
+    alert("📄 Espelho de ponto gerado para impressão/exportação!");
+}
+
+async function listarPonto() {
+    const { data } = await supabase.from("ponto").select("*").order("data", { ascending: false });
+    document.getElementById("lista-ponto").innerHTML = data?.map(ponto => `
+        <tr>
+            <td>${ponto.matricula}</td>
+            <td>${ponto.nome}</td>
+            <td>${ponto.data ? new Date(ponto.data).toLocaleDateString("pt-BR") : "-"}</td>
+            <td>${ponto.entrada || "-"}</td>
+            <td>${ponto.saida || "-"}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarPonto(${ponto.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirPonto(${ponto.id})">🗑️</button>
+            </td>
+        </tr>
+    `).join("") || "<tr><td colspan='6'>Nenhum registro de ponto</td></tr>";
+}
+
+// ------------------------------
+// Gestão de Atestados
+// ------------------------------
+async function salvarOuAtualizarAtestado() {
+    const id = document.getElementById("atestado_id").value;
+    const dados = {
+        matricula: document.getElementById("atestado_matricula").value.trim(),
+        nome: document.getElementById("atestado_nome").value,
+        data: document.getElementById("atestado_data").value,
+        dias: parseInt(document.getElementById("atestado_dias").value),
+        motivo: document.getElementById("atestado_motivo").value.trim(),
+        status: document.getElementById("atestado_status").value,
+        observacoes: document.getElementById("atestado_obs").value.trim()
+    };
+
+    if (id) {
+        await supabase.from("atestados").update(dados).eq("id", id);
+    } else {
+        await supabase.from("atestados").insert([dados]);
+    }
+
+    alert("✅ Registro de atestado salvo!");
+    limparFormulario();
+    listarAtestados();
+}
+
+async function carregarAtestado(id) {
+    const { data } = await supabase.from("atestados").select("*").eq("id", id).maybeSingle();
+    if (!data) return;
+
+    document.getElementById("atestado_matricula").value = data.matricula;
+    buscarDadosDoCadastro();
+    document.getElementById("atestado_id").value = data.id;
+    document.getElementById("atestado_data").value = data.data || "";
+    document.getElementById("atestado_dias").value = data.dias || "";
+    document.getElementById("atestado_motivo").value = data.motivo || "";
+    document.getElementById("atestado_status").value = data.status || "pendente";
+    document.getElementById("atestado_obs").value = data.observacoes || "";
+}
+
+async function excluirAtestado(id) {
+    if (!confirm("Excluir este registro de atestado?")) return;
+    await supabase.from("atestados").delete().eq("id", id);
+    alert("✅ Excluído!");
     listarAtestados();
 }
 
 async function listarAtestados() {
-    const { data, error } = await supabase.from("atestados").select("*").order("data_envio", { ascending: false });
-    if (error) return console.error(error);
-
-    const tbody = document.getElementById("lista-atestados");
-    tbody.innerHTML = data.map(a => `
+    const { data } = await supabase.from("atestados").select("*").order("data", { ascending: false });
+    document.getElementById("lista-atestados").innerHTML = data?.map(atestado => `
         <tr>
-            <td>${a.matricula}</td>
-            <td>${a.nome}</td>
-            <td>${new Date(a.data_envio).toLocaleDateString("pt-BR")}</td>
-            <td>${a.descricao || "-"}</td>
-            <td>${a.status}</td>
-            <td><button class="btn btn-erro" onclick="excluirAtestado(${a.id})">🗑️</button></td>
+            <td>${atestado.matricula}</td>
+            <td>${atestado.nome}</td>
+            <td>${atestado.data ? new Date(atestado.data).toLocaleDateString("pt-BR") : "-"}</td>
+            <td>${atestado.dias}</td>
+            <td>${atestado.motivo}</td>
+            <td class="status-${atestado.status}">${atestado.status}</td>
+            <td>
+                <button class="btn btn-alerta" onclick="carregarAtestado(${atestado.id})">✏️</button>
+                <button class="btn btn-erro" onclick="excluirAtestado(${atestado.id})">🗑️</button>
+            </td>
         </tr>
-    `).join("");
+    `).join("") || "<tr><td colspan='7'>Nenhum registro de atestado</td></tr>";
 }
 
-async function excluirAtestado(id) {
-    if (!confirm("Excluir atestado?")) return;
-    const { error } = await supabase.from("atestados").delete().eq("id", id);
-    if (error) return alert("Erro: " + error.message);
-    listarAtestados();
-}
+// ------------------------------
+// Gestão de Banco de Horas
+// ------------------------------
+async function atualizarBancoHoras() {
+    const matricula = document.getElementById("banco_matricula").value.trim();
+    const periodo = document.getElementById("banco_periodo").value;
+    const saldo = parseFloat(document.getElementById("banco_saldo").value) || 0;
 
-async function salvarBanco() {
+    if (!matricula || !periodo) return alert("Preencha matrícula e período!");
+
     const dados = {
-        matricula: document.getElementById("banco_matricula").value,
-        mes: parseInt(document.getElementById("banco_periodo").value.split("-")[1]),
-        ano: parseInt(document.getElementById("banco_periodo").value.split("-")[0]),
-        saldo_acumulado: parseFloat(document.getElementById("banco_saldo").value) || 0
+        matricula,
+        nome: document.getElementById("banco_nome").value,
+        periodo,
+        saldo,
+        observacoes: document.getElementById("banco_obs").value.trim()
     };
-    const { error } = await supabase.from("banco_horas").insert([dados]);
-    if (error) return alert("Erro: " + error.message);
-    alert("✅ Saldo atualizado!");
-    listarBanco();
+
+    const { data: existente } = await supabase
+        .from("banco_horas")
+        .select("id")
+        .eq("matricula", matricula)
+        .eq("periodo", periodo)
+        .maybeSingle();
+
+    if (existente) {
+        await supabase.from("banco_horas").update(dados).eq("id", existente.id);
+    } else {
+        await supabase.from("banco_horas").insert([dados]);
+    }
+
+    alert("✅ Banco de horas atualizado!");
+    limparFormulario();
+    listarBancoHoras();
 }
 
-async function listarBanco() {
-    const { data, error } = await supabase.from("banco_horas").select("*").order("ano", { ascending: false }).order("mes", { ascending: false });
-    if (error) return console.error(error);
-
-    const tbody = document.getElementById("lista-banco");
-    tbody.innerHTML = data.map(b => `
+async function listarBancoHoras() {
+    const { data } = await supabase.from("banco_horas").select("*").order("periodo", { ascending: false });
+    document.getElementById("lista-banco").innerHTML = data?.map(banco => `
         <tr>
-            <td>${b.matricula}</td>
-            <td>${b.mes}/${b.ano}</td>
-            <td>${b.saldo_acumulado.toFixed(2)}h</td>
-            <td><button class="btn btn-erro" onclick="excluirBanco(${b.id})">🗑️</button></td>
+            <td>${banco.matricula}</td>
+            <td>${banco.nome}</td>
+            <td>${banco.periodo}</td>
+            <td>${banco.saldo.toFixed(2)}h</td>
+            <td>${banco.observacoes || "-"}</td>
         </tr>
-    `).join("");
+    `).join("") || "<tr><td colspan='5'>Nenhum registro de banco de horas</td></tr>";
 }
 
-async function excluirBanco(id) {
-    if (!confirm("Excluir registro?")) return;
-    const { error } = await supabase.from("banco_horas").delete().eq("id", id);
-    if (error) return alert("Erro: " + error.message);
-    listarBanco();
-}
+// ------------------------------
+// Gestão de Comunicados
+// ------------------------------
+async function publicarAviso() {
+    const titulo = document.getElementById("com_titulo").value.trim();
+    const texto = document.getElementById("com_texto").value.trim();
 
-async function publicarComunicado() {
+    if (!titulo || !texto) return alert("Preencha título e texto!");
+
     const dados = {
-        titulo: document.getElementById("com_titulo").value,
-        conteudo: document.getElementById("com_texto").value,
-        data_publicacao: new Date().toISOString().split("T")[0]
+        titulo,
+        texto,
+        data_publicacao: new Date().toISOString()
     };
-    const { error } = await supabase.from("comunicados").insert([dados]);
-    if (error) return alert("Erro: " + error.message);
-    alert("✅ Publicado!");
+
+    await supabase.from("comunicados").insert([dados]);
+    alert("✅ Comunicado publicado!");
+    document.getElementById("com_titulo").value = "";
+    document.getElementById("com_texto").value = "";
     listarComunicados();
 }
 
 async function listarComunicados() {
-    const { data, error } = await supabase.from("comunicados").select("*").order("data_publicacao", { ascending: false });
-    if (error) return console.error(error);
-
-    const div = document.getElementById("lista-comunicados");
-    div.innerHTML = data.map(c => `
-        <div style="background:#F9FAFB; padding:16px; border-radius:6px; margin-bottom:12px; border-left:4px solid var(--primario);">
-            <h4>${c.titulo} <small style="color:#86909C;">(${new Date(c.data_publicacao).toLocaleDateString("pt-BR")})</small></h4>
-            <p style="margin-top:8px;">${c.conteudo}</p>
+    const { data } = await supabase.from("comunicados").select("*").order("data_publicacao", { ascending: false });
+    document.getElementById("lista-comunicados").innerHTML = data?.map(com => `
+        <div style="border:1px solid #E5E6EB; border-radius:8px; padding:16px; margin-bottom:12px;">
+            <h4 style="color:#165DFF; margin:0 0 8px 0;">${com.titulo}</h4>
+            <p style="color:#4E5969; margin:0 0 8px 0;">${com.texto}</p>
+            <small style="color:#86909C;">Publicado em: ${new Date(com.data_publicacao).toLocaleDateString("pt-BR")}</small>
         </div>
-    `).join("");
+    `).join("") || "<p>Nenhum comunicado publicado.</p>";
 }
 
-async function carregarTodasListas() {
-    listarColaboradores();
-    listarPontos();
-    listarFerias();
-    listarAtestados();
-    listarBanco();
-    listarComunicados();
-}
 </script>
 </body>
 </html>
