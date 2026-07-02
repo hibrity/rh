@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sisgespe - Aprovação e Controle</title>
+    <title>Sisgespe - Controle RH</title>
     <style>
         :root {
             --primario: #165DFF;
@@ -18,6 +18,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body { background: var(--fundo); color: #1D2129; }
 
+        /* Tela de Login */
         #tela-login {
             display: flex;
             flex-direction: column;
@@ -66,6 +67,7 @@
         .card-login button:hover { background: #0E42C4; }
         .erro { color: var(--erro); margin-top: 12px; display: none; font-weight: 500; }
 
+        /* Estrutura Principal */
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         #painel { display: none; }
         header {
@@ -88,6 +90,7 @@
             font-weight: bold;
         }
 
+        /* Menu Principal */
         .menu {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -113,6 +116,7 @@
         .menu-item h3 { color: var(--primario); margin-bottom: 10px; font-size: 18px; }
         .menu-item p { font-size: 13px; color: #666; margin-top: 4px; }
         
+        /* Áreas de Conteúdo */
         .aba { display: none; background: var(--branco); padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; }
         .aba.ativa { display: block; }
         
@@ -121,7 +125,6 @@
         .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
         .campo { display: flex; flex-direction: column; margin-bottom: 12px; }
         .campo.visivel { display: flex; }
-        #aba-cadastro .campo, #aba-colaboradores .campo, #aba-beneficios .campo { display: flex; }
         .campo label { font-size: 14px; margin-bottom: 6px; color: #4E5969; font-weight: 500; }
         .campo input, .campo select, .campo textarea { padding: 10px; border: 1px solid var(--borda); border-radius: 6px; font-size: 15px; }
         .campo input:read-only, .campo textarea:read-only { background: #f8f9fa; color: #4E5969; cursor: not-allowed; }
@@ -145,6 +148,7 @@
 </head>
 <body>
 
+<!-- Tela de Login -->
 <div id="tela-login">
     <div class="card-login">
         <h2>Sisgespe - Controle RH</h2>
@@ -154,23 +158,26 @@
     </div>
 </div>
 
+<!-- Painel Principal -->
 <div id="painel" class="container">
     <header>
         <h1>Sisgespe - Aprovação e Controle</h1>
         <button class="btn-sair" onclick="sair()">Sair</button>
     </header>
 
+    <!-- Menu de Navegação -->
     <div class="menu">
         <div class="menu-item" onclick="abrirAba('colaboradores')"><h3>👥 Colaboradores</h3><p>Consulta e gestão geral</p></div>
         <div class="menu-item" onclick="abrirAba('beneficios')"><h3>🎁 Benefícios</h3><p>Vale, plano e auxílios</p></div>
         <div class="menu-item" onclick="abrirAba('cadastro')"><h3>👤 Cadastrar</h3><p>Novo colaborador</p></div>
         <div class="menu-item" onclick="abrirAba('ferias')"><h3>🏖️ Férias</h3><p>Solicitações e aprovação</p></div>
-        <div class="menu-item" onclick="abrirAba('ponto')"><h3>🕒 Controle de Ponto</h3><p>Registros e espelho</p></div>
+        <div class="menu-item" onclick="abrirAba('ponto')"><h3>🕒 Controle de Ponto</h3><p>Ajustes e correções</p></div>
         <div class="menu-item" onclick="abrirAba('atestados')"><h3>📄 Atestados</h3><p>Controle de afastamentos</p></div>
         <div class="menu-item" onclick="abrirAba('banco')"><h3>⏱️ Banco de Horas</h3><p>Saldo e movimentações</p></div>
         <div class="menu-item" onclick="abrirAba('comunicados')"><h3>📢 Comunicados</h3><p>Avisos gerais</p></div>
     </div>
 
+    <!-- Aba: Colaboradores -->
     <div id="aba-colaboradores" class="aba">
         <h2>👥 Gestão de Colaboradores</h2>
         <div class="info-fixa">ℹ️ Visualize, pesquise e filtre todos os colaboradores cadastrados.</div>
@@ -189,6 +196,7 @@
         </table>
     </div>
 
+    <!-- Aba: Benefícios -->
     <div id="aba-beneficios" class="aba">
         <h2>🎁 Controle de Benefícios</h2>
         <div class="info-fixa">ℹ️ Gerencie VT, VA, VR e planos de saúde/odontológico.</div>
@@ -209,9 +217,10 @@
         <table><thead><tr><th>Matrícula</th><th>Nome</th><th>V.Transp</th><th>V.Aliment</th><th>Plano</th><th>Odonto</th><th>Ações</th></tr></thead><tbody id="lista-beneficios"></tbody></table>
     </div>
 
+    <!-- Aba: Cadastro -->
     <div id="aba-cadastro" class="aba">
         <h2>👤 Cadastro de Colaborador</h2>
-        <div class="info-fixa">ℹ️ Dados integrados ao banco Supabase.</div>
+        <div class="info-fixa">ℹ️ Dados integrados ao banco de dados.</div>
         <div class="form-grid">
             <div class="campo oculto"><label>ID</label><input type="text" id="cad_id" readonly></div>
             <div class="campo"><label>Matrícula *</label><input type="text" id="cad_matricula" required></div>
@@ -231,9 +240,10 @@
         <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Cargo</th><th>Admissão</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-colaboradores"></tbody></table>
     </div>
 
+    <!-- Aba: Férias -->
     <div id="aba-ferias" class="aba">
         <h2>🏖️ Controle de Férias</h2>
-        <div class="info-fixa">ℹ️ Busque por matrícula para carregar dados.</div>
+        <div class="info-fixa">ℹ️ Busque por matrícula para carregar dados e gerenciar períodos.</div>
         <div class="form-grid">
             <div class="campo oculto"><label>ID</label><input type="text" id="ferias_id" readonly></div>
             <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="ferias_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
@@ -253,29 +263,74 @@
         <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Período</th><th>Início</th><th>Retorno</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-ferias"></tbody></table>
     </div>
 
+    <!-- Aba: Controle de Ponto (SEM AVISO DESNECESSÁRIO) -->
     <div id="aba-ponto" class="aba">
-        <h2>🕒 Controle de Ponto</h2>
-        <div class="info-fixa">ℹ️ Registre horários e gere espelho de ponto.</div>
+        <h2>🕒 Controle de Ponto — Ajustes e Correções</h2>
         <div class="form-grid">
-            <div class="campo oculto"><label>ID</label><input type="text" id="ponto_id" readonly></div>
-            <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="ponto_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
-            <div class="campo"><label>Nome</label><input type="text" id="ponto_nome" readonly></div>
-            <div class="campo"><label>Data</label><input type="date" id="ponto_data"></div>
-            <div class="campo"><label>Entrada</label><input type="time" id="ponto_entrada"></div>
-            <div class="campo"><label>Saída Almoço</label><input type="time" id="ponto_saida_almoco"></div>
-            <div class="campo"><label>Retorno Almoço</label><input type="time" id="ponto_retorno_almoco"></div>
-            <div class="campo"><label>Saída</label><input type="time" id="ponto_saida"></div>
-            <div class="campo" style="grid-column:1/-1;"><label>Observação</label><textarea id="ponto_obs" rows="2"></textarea></div>
+            <div class="campo oculto"><label>ID do Registro</label><input type="text" id="ponto_id" readonly></div>
+            <div class="campo-busca">
+                <label>Matrícula do Colaborador</label>
+                <div class="linha-busca">
+                    <input type="text" id="ponto_matricula" style="flex:1;" placeholder="Digite a matrícula...">
+                    <button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button>
+                </div>
+            </div>
+            <div class="campo">
+                <label>Nome Completo</label>
+                <input type="text" id="ponto_nome" readonly placeholder="Nome aparecerá após busca">
+            </div>
+            <div class="campo">
+                <label>Data do Ponto *</label>
+                <input type="date" id="ponto_data" required>
+            </div>
+            <div class="campo">
+                <label>Horário de Entrada</label>
+                <input type="time" id="ponto_entrada">
+            </div>
+            <div class="campo">
+                <label>Saída para Almoço</label>
+                <input type="time" id="ponto_saida_almoco">
+            </div>
+            <div class="campo">
+                <label>Retorno do Almoço</label>
+                <input type="time" id="ponto_retorno_almoco">
+            </div>
+            <div class="campo">
+                <label>Horário de Saída</label>
+                <input type="time" id="ponto_saida">
+            </div>
+            <div class="campo" style="grid-column:1/-1;">
+                <label>Justificativa / Observação *</label>
+                <textarea id="ponto_obs" rows="2" placeholder="Motivo da alteração ou inclusão..."></textarea>
+            </div>
         </div>
-        <button class="btn btn-sucesso" id="btn_salvar_ponto" style="display:none;" onclick="salvarOuAtualizarPonto()">💾 Salvar</button>
-        <button class="btn btn-alerta" id="btn_espelho_ponto" style="display:none;" onclick="gerarEspelhoPonto()">📋 Espelho</button>
-        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Registros</h3>
-        <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Entrada</th><th>Saída</th><th>Ações</th></tr></thead><tbody id="lista-ponto"></tbody></table>
+        <button class="btn btn-sucesso" id="btn_salvar_ponto" style="display:none;" onclick="salvarOuAtualizarPonto()">💾 Salvar Ajuste</button>
+        <button class="btn btn-alerta" id="btn_espelho_ponto" style="display:none;" onclick="gerarEspelhoPonto()">📋 Ver Espelho do Mês</button>
+        <button class="btn btn-cinza" id="btn_limpar_ponto" style="display:none;" onclick="limparFormulario()">🧹 Limpar Campos</button>
+
+        <h3 style="margin-top:32px; border-top:1px solid var(--borda); padding-top:16px;">📋 Registros de Ponto</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Entrada</th>
+                    <th>Saída Almoço</th>
+                    <th>Retorno Almoço</th>
+                    <th>Saída</th>
+                    <th>Observação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="lista-ponto"></tbody>
+        </table>
     </div>
 
+    <!-- Aba: Atestados -->
     <div id="aba-atestados" class="aba">
         <h2>📄 Controle de Atestados</h2>
-        <div class="info-fixa">ℹ️ Registre afastamentos e dias de ausência.</div>
+        <div class="info-fixa">ℹ️ Registre e acompanhe atestados e afastamentos.</div>
         <div class="form-grid">
             <div class="campo oculto"><label>ID</label><input type="text" id="atestado_id" readonly></div>
             <div class="campo-busca"><label>Matrícula</label><div class="linha-busca"><input type="text" id="atestado_matricula" style="flex:1;"><button class="btn btn-alerta" onclick="buscarDadosDoCadastro()">🔍 Buscar</button></div></div>
@@ -291,6 +346,7 @@
         <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Data</th><th>Dias</th><th>Motivo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="lista-atestados"></tbody></table>
     </div>
 
+    <!-- Aba: Banco de Horas -->
     <div id="aba-banco" class="aba">
         <h2>⏱️ Banco de Horas</h2>
         <div class="info-fixa">ℹ️ Acompanhe saldo e períodos de horas extras/faltas.</div>
@@ -306,6 +362,7 @@
         <table><thead><tr><th>Matrícula</th><th>Nome</th><th>Período</th><th>Saldo</th><th>Observações</th></tr></thead><tbody id="lista-banco"></tbody></table>
     </div>
 
+    <!-- Aba: Comunicados -->
     <div id="aba-comunicados" class="aba">
         <h2>📢 Comunicados</h2>
         <div class="form-grid" style="grid-template-columns:1fr;">
@@ -316,7 +373,7 @@
         <button class="btn btn-sucesso" onclick="publicarAviso()">📤 Publicar</button>
         <div id="lista-comunicados" style="margin-top:24px;"></div>
     </div>
-    <script>
+<script>
 const SENHA_CORRETA = "Sisgespe2026";
 let supabase;
 
