@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>EngageRH — Painel Administrativo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --roxo-escuro: #2A1B4E;
+    --roxo-medio: #3D2A6E;
+    --indigo: #4F46E5;
+    --rosa-neon: #FF3CAC;
+    --verde-ok: #10B981;
+    --amarelo: #F59E0B;
+    --vermelho: #EF4444;
+    --bg: #F4F5F9;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --text-soft: #6B7280;
+    --border: #E5E7EB;
+    --shadow-sm: 0 2px 8px rgba(42, 27, 78, 0.06);
+    --shadow-lg: 0 20px 40px rgba(42, 27, 78, 0.15);
+    --radius: 16px;
+    --grad-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #FF3CAC 100%);
+    --grad-dark: linear-gradient(135deg, #2A1B4E 0%, #3D2A6E 100%);
+  }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  input { font-family: inherit; }
+
+  /* ============ TELA DE DESBLOQUEIO ============ */
+  .unlock-screen {
+    position: fixed; inset: 0; background: var(--grad-dark);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .unlock-card {
+    background: var(--card); border-radius: 24px; padding: 32px 24px;
+    width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .unlock-header { text-align: center; margin-bottom: 24px; }
+  .unlock-icon {
+    width: 64px; height: 64px; background: var(--grad-primary);
+    border-radius: 16px; display: grid; place-items: center;
+    font-size: 1.8rem; margin: 0 auto 16px; color: #fff;
+    box-shadow: 0 8px 20px rgba(255,60,172,0.3);
+  }
+  .unlock-title { font-size: 1.4rem; font-weight: 800; color: var(--roxo-escuro); }
+  .unlock-sub { font-size: 0.85rem; color: var(--text-soft); margin-top: 4px; }
+  
+  .form-group { margin-bottom: 16px; }
+  label {
+    display: block; font-size: 0.75rem; font-weight: 700;
+    color: var(--text-soft); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 0.95rem; background: #FAFAFC; color: var(--text);
+    transition: all 0.2s;
+  }
+  input:focus {
+    outline: none; border-color: var(--indigo); background: #fff;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
+  }
+  .btn-primary {
+    width: 100%; padding: 14px; background: var(--grad-primary);
+    color: #fff; border-radius: 12px; font-weight: 700;
+    font-size: 1rem; margin-top: 8px;
+    transition: transform 0.15s, opacity 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  
+  .error-msg {
+    margin-top: 12px; padding: 10px;
+    background: #FEE2E2; color: var(--vermelho);
+    border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+    display: none; text-align: center;
+  }
+  .info-msg {
+    margin-top: 12px; padding: 10px;
+    background: #DBEAFE; color: #1E40AF;
+    border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+    text-align: center;
+  }
+
+  /* ============ PAINEL ADMIN ============ */
+  .admin-app {
+    max-width: 1200px; margin: 0 auto;
+    min-height: 100vh; padding-bottom: 40px;
+    display: none;
+  }
+  .admin-header {
+    background: var(--grad-dark); color: #fff;
+    padding: 24px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .admin-logo { display: flex; align-items: center; gap: 12px; }
+  .admin-logo-badge {
+    width: 40px; height: 40px; background: rgba(255,255,255,0.15);
+    border-radius: 10px; display: grid; place-items: center; font-size: 1.2rem;
+  }
+  .admin-company { font-size: 1.1rem; font-weight: 700; }
+  .admin-role { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .btn-logout {
+    padding: 8px 16px; background: rgba(255,255,255,0.1);
+    color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.2); }
+
+  .admin-content { padding: 32px; }
+  
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--indigo);
+  }
+  .stat-card.warning { border-left-color: var(--amarelo); }
+  .stat-card.success { border-left-color: var(--verde-ok); }
+  .stat-card.danger { border-left-color: var(--vermelho); }
+  
+  .stat-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-soft); letter-spacing: 0.5px; }
+  .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text); margin-top: 6px; }
+  .stat-sub { font-size: 0.8rem; color: var(--text-soft); margin-top: 4px; }
+
+  .section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; margin-top: 32px;
+  }
+  .section-title { font-size: 1.1rem; font-weight: 800; color: var(--roxo-escuro); }
+  
+  .data-table-container {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .data-table th {
+    background: #F9FAFB; padding: 14px 16px; text-align: left;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    color: var(--text-soft); letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 14px 16px; border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .data-table tr:hover { background: #FAFAFC; }
+  
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 100px;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  }
+  .badge-ok { background: #D1FAE5; color: #065F46; }
+  .badge-warn { background: #FEF3C7; color: #92400E; }
+
+  .valor-positivo { color: var(--verde-ok); font-weight: 700; }
+  .valor-negativo { color: var(--vermelho); font-weight: 700; }
+
+  .btn-detail {
+    padding: 6px 12px; background: rgba(79,70,229,0.1);
+    color: var(--indigo); border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+  }
+  .btn-detail:hover { background: var(--indigo); color: #fff; }
+
+  .empresa-info-banner {
+    background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+    border: 1px solid #C7D2FE;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .empresa-info-banner strong { color: var(--roxo-escuro); }
+  .empresa-info-banner small { color: var(--text-soft); }
+
+  @keyframes popIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    .admin-content { padding: 16px; }
+    .data-table-container { overflow-x: auto; }
+    .data-table { min-width: 800px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TELA DE DESBLOQUEIO ============ -->
+<div id="unlockScreen" class="unlock-screen">
+  <div class="unlock-card">
+    <div class="unlock-header">
+      <div class="unlock-icon">🔐</div>
+      <h1 class="unlock-title">Ativação do Painel RH</h1>
+      <p class="unlock-sub">Insira os dados fornecidos pelo Super Admin para liberar o acesso.</p>
+    </div>
+    
+    <form id="unlockForm">
+      <div class="form-group">
+        <label>Nome do Administrador</label>
+        <input type="text" id="adminNome" placeholder="Ex: Ana Silva" required />
+      </div>
+      <div class="form-group">
+        <label>CNPJ da Empresa</label>
+        <input type="text" id="empresaCNPJ" placeholder="00.000.000/0000-00" maxlength="18" required />
+      </div>
+      <div class="form-group">
+        <label>Chave Secreta (16 dígitos)</label>
+        <input type="password" id="secretKey" placeholder="Ex: A7B2-K9M4-P3X8-Q1W5" maxlength="19" required />
+      </div>
+      
+      <button type="submit" class="btn-primary" id="btnUnlock">Ativar Painel Administrativo</button>
+      <div id="unlockError" class="error-msg"></div>
+      <div class="info-msg">💡 As credenciais são fornecidas após o cadastro no Super Admin.</div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ PAINEL ADMIN PRINCIPAL ============ -->
+<div id="adminApp" class="admin-app">
+  <header class="admin-header">
+    <div class="admin-logo">
+      <div class="admin-logo-badge">⚡</div>
+      <div>
+        <div class="admin-company" id="displayEmpresa">Nome da Empresa</div>
+        <div class="admin-role">Painel de Gestão & Folha de Pagamento</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="resetAdminConfig()">⚙️ Resetar Configuração</button>
+  </header>
+
+  <div class="admin-content">
+    <!-- Banner com dados da empresa -->
+    <div class="empresa-info-banner">
+      <div>
+        <strong id="bannerEmpresa">---</strong><br>
+        <small>CNPJ: <span id="bannerCNPJ">---</span> · Plano: <span id="bannerPlano">---</span></small>
+      </div>
+      <div style="text-align: right;">
+        <small>Administrador</small><br>
+        <strong id="bannerAdmin">---</strong>
+      </div>
+    </div>
+
+    <!-- Cards de Resumo -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total da Folha Estimada</div>
+        <div class="stat-value" id="statTotalFolha">R$ 0,00</div>
+        <div class="stat-sub">Base + HE - Descontos</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-label">Horas Extras a Pagar (50%)</div>
+        <div class="stat-value" id="statTotalHE">00:00 h</div>
+        <div class="stat-sub" id="statValorHE">R$ 0,00</div>
+      </div>
+      <div class="stat-card danger">
+        <div class="stat-label">Descontos por Atraso/Falta</div>
+        <div class="stat-value" id="statTotalDescontos">R$ 0,00</div>
+        <div class="stat-sub">Baseado em saldo negativo</div>
+      </div>
+      <div class="stat-card success">
+        <div class="stat-label">Funcionários Ativos</div>
+        <div class="stat-value" id="statTotalFunc">0</div>
+        <div class="stat-sub">Processados neste mês</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">📊 Cálculo Automático da Folha de Pagamento</div>
+      <button class="btn-detail" onclick="recalcularFolha()" style="background: var(--verde-ok); color: #fff; padding: 10px 16px;">🔄 Recalcular Tudo</button>
+    </div>
+
+    <div class="data-table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Funcionário</th>
+            <th>Matrícula</th>
+            <th>Salário Base</th>
+            <th>Horas Trabalhadas</th>
+            <th>Horas Extras (50%)</th>
+            <th>Descontos</th>
+            <th>Salário Líquido</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="folhaTableBody"></tbody>
+      </table>
+    </div>
+    
+    <div style="margin-top: 24px; padding: 16px; background: #F0FDF4; border-radius: 12px; border: 1px solid #BBF7D0; font-size: 0.85rem; color: #166534;">
+      <strong>✅ Nota Fiscal e Trabalhista:</strong> Os cálculos consideram automaticamente o divisor mensal de 220h, adicional de 50% para horas extras e desconto proporcional ao valor da hora para saldos negativos.
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   LÓGICA DO PAINEL ADMIN RH — INTEGRADO COM SUPER ADMIN
+   ============================================================ */
+
+const ADMIN_CONFIG_KEY = 'engage_rh_admin_config_v1';
+const EMPRESAS_DB_KEY = 'engage_rh_empresas_db'; // MESMA chave usada pelo Super Admin
+const EMPLOYEE_DATA_KEY = 'engage_rh_mock_employees';
+
+// Dados mockados de funcionários (em produção viriam do banco)
+const MOCK_EMPLOYEES = [
+  { id: 1, nome: "Mariana Costa", matricula: "10045", salarioBase: 4500.00, minutosTrabalhadosMes: 17600, minutosExtrasMes: 120, minutosNegativosMes: 0 },
+  { id: 2, nome: "Carlos Oliveira", matricula: "10046", salarioBase: 3200.00, minutosTrabalhadosMes: 13200, minutosExtrasMes: 0, minutosNegativosMes: 240 },
+  { id: 3, nome: "Fernanda Lima", matricula: "10047", salarioBase: 5800.00, minutosTrabalhadosMes: 17600, minutosExtrasMes: 300, minutosNegativosMes: 0 },
+  { id: 4, nome: "Roberto Santos", matricula: "10048", salarioBase: 2800.00, minutosTrabalhadosMes: 13200, minutosExtrasMes: 60, minutosNegativosMes: 120 }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  checkAdminAccess();
+  setupMasks();
+});
+
+/* ---------- 1. VALIDAÇÃO CRUZADA COM SUPER ADMIN ---------- */
+function checkAdminAccess() {
+  const config = localStorage.getItem(ADMIN_CONFIG_KEY);
+  if (config) {
+    // Já está desbloqueado — carrega painel
+    document.getElementById('unlockScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    const data = JSON.parse(config);
+    carregarDadosEmpresa(data);
+    recalcularFolha();
+  } else {
+    // Precisa desbloquear
+    document.getElementById('unlockScreen').style.display = 'flex';
+    document.getElementById('adminApp').style.display = 'none';
+  }
+}
+
+function carregarDadosEmpresa(config) {
+  document.getElementById('displayEmpresa').textContent = config.empresa;
+  document.getElementById('bannerEmpresa').textContent = config.empresa;
+  document.getElementById('bannerCNPJ').textContent = config.cnpj;
+  document.getElementById('bannerPlano').textContent = config.plano || '---';
+  document.getElementById('bannerAdmin').textContent = config.admin;
+}
+
+// Função principal: valida CNPJ + Chave contra o banco do Super Admin
+function validarContraSuperAdmin(cnpjDigitado, chaveDigitada) {
+  const empresasDB = localStorage.getItem(EMPRESAS_DB_KEY);
+  
+  if (!empresasDB) {
+    return { 
+      ok: false, 
+      erro: 'Nenhuma empresa cadastrada no Super Admin. Faça o cadastro primeiro.' 
+    };
+  }
+
+  const empresas = JSON.parse(empresasDB);
+  const cnpjLimpo = cnpjDigitado.replace(/\D/g, '');
+  
+  // Busca empresa pelo CNPJ
+  const empresa = empresas.find(e => e.cnpj.replace(/\D/g, '') === cnpjLimpo);
+  
+  if (!empresa) {
+    return { 
+      ok: false, 
+      erro: 'CNPJ não encontrado no sistema. Verifique se a empresa foi cadastrada pelo Super Admin.' 
+    };
+  }
+
+  if (empresa.status !== 'Ativa') {
+    return { 
+      ok: false, 
+      erro: `Esta empresa está com status "${empresa.status}". Solicite a ativação ao Super Admin.` 
+    };
+  }
+
+  // Compara chaves (remove hifens da chave digitada para comparar)
+  const chaveDigitadaLimpa = chaveDigitada.replace(/[-\s]/g, '').toUpperCase();
+  const chaveCadastradaLimpa = empresa.chaveSecreta.replace(/[-\s]/g, '').toUpperCase();
+
+  if (chaveDigitadaLimpa !== chaveCadastradaLimpa) {
+    return { 
+      ok: false, 
+      erro: 'Chave secreta inválida. Confira os 16 caracteres fornecidos pelo Super Admin.' 
+    };
+  }
+
+  // Tudo certo!
+  return { 
+    ok: true, 
+    empresa: empresa 
+  };
+}
+
+document.getElementById('unlockForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nome = document.getElementById('adminNome').value.trim();
+  const cnpj = document.getElementById('empresaCNPJ').value.trim();
+  const chave = document.getElementById('secretKey').value.trim();
+  const errorDiv = document.getElementById('unlockError');
+  const btn = document.getElementById('btnUnlock');
+
+  errorDiv.style.display = 'none';
+
+  // Validação básica de formato
+  const cnpjLimpo = cnpj.replace(/\D/g, '');
+  if (cnpjLimpo.length !== 14) {
+    errorDiv.textContent = 'CNPJ inválido. Verifique o formato.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  const chaveLimpa = chave.replace(/[-\s]/g, '');
+  if (chaveLimpa.length !== 16) {
+    errorDiv.textContent = 'A chave secreta deve ter exatamente 16 caracteres.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "Validando com Super Admin...";
+
+  // Simula delay de validação
+  setTimeout(() => {
+    const validacao = validarContraSuperAdmin(cnpj, chave);
+
+    if (!validacao.ok) {
+      errorDiv.textContent = '❌ ' + validacao.erro;
+      errorDiv.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = "Ativar Painel Administrativo";
+      return;
+    }
+
+    // SUCESSO — salva configuração local com dados da empresa
+    const configData = {
+      admin: nome,
+      empresa: validacao.empresa.nomeFantasia,
+      razaoSocial: validacao.empresa.razaoSocial,
+      cnpj: validacao.empresa.cnpj,
+      plano: validacao.empresa.plano,
+      empresaId: validacao.empresa.id,
+      ativadoEm: new Date().toISOString()
+    };
+    
+    localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(configData));
+    
+    if (!localStorage.getItem(EMPLOYEE_DATA_KEY)) {
+      localStorage.setItem(EMPLOYEE_DATA_KEY, JSON.stringify(MOCK_EMPLOYEES));
+    }
+
+    checkAdminAccess();
+  }, 1000);
+});
+
+function resetAdminConfig() {
+  if (confirm("ATENÇÃO: Isso apagará a configuração local e exigirá nova ativação. Deseja continuar?")) {
+    localStorage.removeItem(ADMIN_CONFIG_KEY);
+    location.reload();
+  }
+}
+
+/* ---------- 2. MÁSCARAS ---------- */
+function setupMasks() {
+  const cnpjInput = document.getElementById('empresaCNPJ');
+  cnpjInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length > 14) v = v.slice(0, 14);
+    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+    e.target.value = v;
+  });
+
+  const keyInput = document.getElementById('secretKey');
+  keyInput.addEventListener('input', (e) => {
+    // Permite letras, números e hifens (formatação automática em grupos de 4)
+    let v = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    if (v.length > 16) v = v.slice(0, 16);
+    // Formata em grupos de 4: XXXX-XXXX-XXXX-XXXX
+    v = v.match(/.{1,4}/g)?.join('-') || v;
+    e.target.value = v;
+  });
+}
+
+/* ---------- 3. MOTOR DE CÁLCULO TRABALHISTA ---------- */
+function recalcularFolha() {
+  const employees = JSON.parse(localStorage.getItem(EMPLOYEE_DATA_KEY) || JSON.stringify(MOCK_EMPLOYEES));
+  const tbody = document.getElementById('folhaTableBody');
+  tbody.innerHTML = '';
+
+  let totalFolha = 0, totalMinutosHE = 0, totalValorHE = 0, totalDescontos = 0;
+  const DIVISOR_MENSAL = 220;
+
+  employees.forEach(emp => {
+    const valorHora = emp.salarioBase / DIVISOR_MENSAL;
+    const horasExtrasDecimal = emp.minutosExtrasMes / 60;
+    const valorHE = horasExtrasDecimal * valorHora * 1.5;
+    totalMinutosHE += emp.minutosExtrasMes;
+    totalValorHE += valorHE;
+
+    const minutosNegativosDecimal = emp.minutosNegativosMes / 60;
+    const valorDesconto = minutosNegativosDecimal * valorHora;
+    totalDescontos += valorDesconto;
+
+    const salarioLiquidoEstimado = emp.salarioBase + valorHE - valorDesconto;
+    totalFolha += salarioLiquidoEstimado;
+
+    const fmtMinutos = (min) => {
+      const h = Math.floor(min / 60);
+      const m = min % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} h`;
+    };
+    const fmtMoeda = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    let statusBadge = '<span class="badge badge-ok">Regular</span>';
+    if (emp.minutosNegativosMes > 120) {
+      statusBadge = '<span class="badge badge-warn">Atenção</span>';
+    }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight: 600;">${emp.nome}</td>
+      <td>${emp.matricula}</td>
+      <td>${fmtMoeda(emp.salarioBase)}</td>
+      <td>${fmtMinutos(emp.minutosTrabalhadosMes)}</td>
+      <td class="valor-positivo">
+        ${emp.minutosExtrasMes > 0 ? `+ ${fmtMinutos(emp.minutosExtrasMes)}<br><small>${fmtMoeda(valorHE)}</small>` : '-'}
+      </td>
+      <td class="valor-negativo">
+        ${emp.minutosNegativosMes > 0 ? `- ${fmtMinutos(emp.minutosNegativosMes)}<br><small>${fmtMoeda(valorDesconto)}</small>` : '-'}
+      </td>
+      <td style="font-weight: 800; font-size: 1rem;">${fmtMoeda(salarioLiquidoEstimado)}</td>
+      <td>${statusBadge}</td>
+      <td><button class="btn-detail" onclick="alert('Detalhes de ${emp.nome}:\\n\\nSalário Base: ${fmtMoeda(emp.salarioBase)}\\nValor Hora: ${fmtMoeda(valorHora)}\\nHE (50%): ${fmtMoeda(valorHE)}\\nDescontos: ${fmtMoeda(valorDesconto)}\\n\\nTotal Líquido: ${fmtMoeda(salarioLiquidoEstimado)}')">Ver</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('statTotalFolha').textContent = totalFolha.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  
+  const hHE = Math.floor(totalMinutosHE / 60);
+  const mHE = totalMinutosHE % 60;
+  document.getElementById('statTotalHE').textContent = `${String(hHE).padStart(2,'0')}:${String(mHE).padStart(2,'0')} h`;
+  document.getElementById('statValorHE').textContent = totalValorHE.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  document.getElementById('statTotalDescontos').textContent = totalDescontos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  document.getElementById('statTotalFunc').textContent = employees.length;
+}
+</script>
+
+</body>
+</html>
