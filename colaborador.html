@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EngageRH — Painel Administrativo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --roxo-escuro: #2A1B4E; --roxo-medio: #3D2A6E; --indigo: #4F46E5;
+    --rosa-neon: #FF3CAC; --verde-ok: #10B981; --amarelo: #F59E0B;
+    --vermelho: #EF4444; --bg: #F4F5F9; --card: #FFFFFF;
+    --text: #1A1A2E; --text-soft: #6B7280; --border: #E5E7EB;
+    --shadow-sm: 0 2px 8px rgba(42, 27, 78, 0.06);
+    --shadow-lg: 0 20px 40px rgba(42, 27, 78, 0.15);
+    --radius: 16px;
+    --grad-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #FF3CAC 100%);
+    --grad-dark: linear-gradient(135deg, #2A1B4E 0%, #3D2A6E 100%);
+  }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  input, select { font-family: inherit; }
+
+  .unlock-screen {
+    position: fixed; inset: 0; background: var(--grad-dark);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; padding: 20px;
+  }
+  .unlock-card {
+    background: var(--card); border-radius: 24px; padding: 32px 24px;
+    width: 100%; max-width: 440px; box-shadow: var(--shadow-lg);
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .unlock-header { text-align: center; margin-bottom: 24px; }
+  .unlock-icon {
+    width: 64px; height: 64px; background: var(--grad-primary);
+    border-radius: 16px; display: grid; place-items: center;
+    font-size: 1.8rem; margin: 0 auto 16px; color: #fff;
+  }
+  .unlock-title { font-size: 1.4rem; font-weight: 800; color: var(--roxo-escuro); }
+  .unlock-sub { font-size: 0.85rem; color: var(--text-soft); margin-top: 4px; }
+  .form-group { margin-bottom: 16px; }
+  label {
+    display: block; font-size: 0.75rem; font-weight: 700;
+    color: var(--text-soft); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  input[type="text"], input[type="password"], input[type="number"], input[type="email"] {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 0.95rem; background: #FAFAFC; color: var(--text);
+  }
+  input:focus { outline: none; border-color: var(--indigo); background: #fff; }
+  .btn-primary {
+    width: 100%; padding: 14px; background: var(--grad-primary);
+    color: #fff; border-radius: 12px; font-weight: 700; font-size: 1rem;
+    margin-top: 8px; transition: transform 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .error-msg {
+    margin-top: 12px; padding: 10px; background: #FEE2E2;
+    color: var(--vermelho); border-radius: 8px; font-size: 0.82rem;
+    font-weight: 600; display: none; text-align: center;
+  }
+
+  .admin-app { max-width: 1200px; margin: 0 auto; min-height: 100vh; display: none; }
+  .admin-header {
+    background: var(--grad-dark); color: #fff; padding: 24px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .admin-logo { display: flex; align-items: center; gap: 12px; }
+  .admin-logo-badge {
+    width: 40px; height: 40px; background: rgba(255,255,255,0.15);
+    border-radius: 10px; display: grid; place-items: center; font-size: 1.2rem;
+  }
+  .admin-company { font-size: 1.1rem; font-weight: 700; }
+  .admin-role { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+  .btn-logout {
+    padding: 8px 16px; background: rgba(255,255,255,0.1);
+    color: #fff; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.2); }
+  .admin-content { padding: 32px; }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    border-bottom: 2px solid var(--border);
+  }
+  .tab-btn {
+    padding: 12px 20px; font-weight: 600; font-size: 0.9rem;
+    color: var(--text-soft); border-bottom: 3px solid transparent;
+    margin-bottom: -2px; transition: all 0.2s;
+  }
+  .tab-btn.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+  .tab-btn:hover { color: var(--text); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+  .empresa-info-banner {
+    background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+    border: 1px solid #C7D2FE; border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .empresa-info-banner strong { color: var(--roxo-escuro); }
+  .empresa-info-banner small { color: var(--text-soft); }
+
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--indigo);
+  }
+  .stat-card.warning { border-left-color: var(--amarelo); }
+  .stat-card.success { border-left-color: var(--verde-ok); }
+  .stat-card.danger { border-left-color: var(--vermelho); }
+  .stat-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-soft); }
+  .stat-value { font-size: 1.8rem; font-weight: 800; margin-top: 6px; }
+  .stat-sub { font-size: 0.8rem; color: var(--text-soft); margin-top: 4px; }
+
+  .section-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; margin-top: 16px;
+  }
+  .section-title { font-size: 1.1rem; font-weight: 800; color: var(--roxo-escuro); }
+
+  .data-table-container {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .data-table th {
+    background: #F9FAFB; padding: 14px 16px; text-align: left;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    color: var(--text-soft); border-bottom: 1px solid var(--border);
+  }
+  .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+  .data-table tr:hover { background: #FAFAFC; }
+
+  .badge {
+    display: inline-block; padding: 4px 10px; border-radius: 100px;
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  }
+  .badge-ok { background: #D1FAE5; color: #065F46; }
+  .badge-warn { background: #FEF3C7; color: #92400E; }
+  .valor-positivo { color: var(--verde-ok); font-weight: 700; }
+  .valor-negativo { color: var(--vermelho); font-weight: 700; }
+  .btn-detail {
+    padding: 6px 12px; background: rgba(79,70,229,0.1);
+    color: var(--indigo); border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+  }
+  .btn-detail:hover { background: var(--indigo); color: #fff; }
+  .btn-danger {
+    padding: 6px 12px; background: rgba(239,68,68,0.1);
+    color: var(--vermelho); border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+    margin-left: 4px;
+  }
+  .btn-danger:hover { background: var(--vermelho); color: #fff; }
+
+  /* MODAL CADASTRO FUNCIONÁRIO */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(42,27,78,0.6);
+    backdrop-filter: blur(8px); display: none; align-items: center;
+    justify-content: center; z-index: 10000; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 20px; padding: 28px;
+    max-width: 500px; width: 100%;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .modal-title {
+    font-size: 1.2rem; font-weight: 800; color: var(--roxo-escuro);
+    margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close {
+    font-size: 1.5rem; color: var(--text-soft); cursor: pointer;
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .btn-secondary {
+    padding: 12px 20px; background: #fff; color: var(--text);
+    border: 1.5px solid var(--border); border-radius: 10px; font-weight: 600;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  @media (max-width: 768px) {
+    .admin-content { padding: 16px; }
+    .data-table-container { overflow-x: auto; }
+    .data-table { min-width: 700px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TELA DE DESBLOQUEIO -->
+<div id="unlockScreen" class="unlock-screen">
+  <div class="unlock-card">
+    <div class="unlock-header">
+      <div class="unlock-icon">🔐</div>
+      <h1 class="unlock-title">Ativação do Painel RH</h1>
+      <p class="unlock-sub">Insira os dados fornecidos pelo Super Admin.</p>
+    </div>
+    <form id="unlockForm">
+      <div class="form-group">
+        <label>Nome do Administrador</label>
+        <input type="text" id="adminNome" required />
+      </div>
+      <div class="form-group">
+        <label>CNPJ da Empresa</label>
+        <input type="text" id="empresaCNPJ" maxlength="18" required />
+      </div>
+      <div class="form-group">
+        <label>Chave Secreta (16 dígitos)</label>
+        <input type="password" id="secretKey" maxlength="19" required />
+      </div>
+      <button type="submit" class="btn-primary" id="btnUnlock">Ativar Painel</button>
+      <div id="unlockError" class="error-msg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- PAINEL ADMIN -->
+<div id="adminApp" class="admin-app">
+  <header class="admin-header">
+    <div class="admin-logo">
+      <div class="admin-logo-badge">⚡</div>
+      <div>
+        <div class="admin-company" id="displayEmpresa">Empresa</div>
+        <div class="admin-role">Painel de Gestão RH</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="resetAdminConfig()">⚙️ Resetar</button>
+  </header>
+
+  <div class="admin-content">
+    <div class="empresa-info-banner">
+      <div>
+        <strong id="bannerEmpresa">---</strong><br>
+        <small>CNPJ: <span id="bannerCNPJ">---</span> · Plano: <span id="bannerPlano">---</span></small>
+      </div>
+      <div style="text-align: right;">
+        <small>Administrador</small><br>
+        <strong id="bannerAdmin">---</strong>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="funcionarios">👥 Funcionários</button>
+      <button class="tab-btn" data-tab="folha">💰 Folha de Pagamento</button>
+    </div>
+
+    <!-- TAB FUNCIONÁRIOS -->
+    <div class="tab-content active" id="tab-funcionarios">
+      <div class="stats-grid">
+        <div class="stat-card success">
+          <div class="stat-label">Total de Funcionários</div>
+          <div class="stat-value" id="statTotalFunc">0</div>
+          <div class="stat-sub">Cadastrados no sistema</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Folha Mensal</div>
+          <div class="stat-value" id="statFolhaTotal">R$ 0</div>
+          <div class="stat-sub">Salários base somados</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">Ticket Médio</div>
+          <div class="stat-value" id="statTicketMedio">R$ 0</div>
+          <div class="stat-sub">Por funcionário</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">👥 Gestão de Funcionários</div>
+        <button class="btn-detail" onclick="abrirModalFuncionario()" style="background: var(--verde-ok); color: #fff; padding: 10px 16px;">+ Cadastrar Funcionário</button>
+      </div>
+
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Matrícula</th>
+              <th>E-mail</th>
+              <th>Cargo</th>
+              <th>Salário Base</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="funcTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB FOLHA -->
+    <div class="tab-content" id="tab-folha">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total da Folha</div>
+          <div class="stat-value" id="statTotalFolha">R$ 0,00</div>
+          <div class="stat-sub">Base + HE - Descontos</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">Horas Extras (50%)</div>
+          <div class="stat-value" id="statTotalHE">00:00 h</div>
+          <div class="stat-sub" id="statValorHE">R$ 0,00</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">Descontos</div>
+          <div class="stat-value" id="statTotalDescontos">R$ 0,00</div>
+          <div class="stat-sub">Atrasos/Faltas</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">💰 Cálculo Automático da Folha</div>
+        <button class="btn-detail" onclick="recalcularFolha()" style="background: var(--verde-ok); color: #fff; padding: 10px 16px;">🔄 Recalcular</button>
+      </div>
+
+      <div class="data-table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Funcionário</th>
+              <th>Matrícula</th>
+              <th>Salário Base</th>
+              <th>Horas Extras</th>
+              <th>Descontos</th>
+              <th>Líquido</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="folhaTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CADASTRO FUNCIONÁRIO -->
+<div id="modalFuncionario" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span id="modalFuncTitle">Cadastrar Funcionário</span>
+      <span class="modal-close" onclick="fecharModalFuncionario()">×</span>
+    </div>
+    <form id="formFuncionario">
+      <input type="hidden" id="funcId" />
+      <div class="form-group">
+        <label>Nome Completo</label>
+        <input type="text" id="funcNome" required />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Matrícula</label>
+          <input type="text" id="funcMatricula" required />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="funcEmail" required />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Cargo</label>
+          <input type="text" id="funcCargo" placeholder="Ex: Analista" required />
+        </div>
+        <div class="form-group">
+          <label>Salário Base (R$)</label>
+          <input type="number" id="funcSalario" step="0.01" min="0" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Senha de Acesso (para o portal do colaborador)</label>
+        <input type="text" id="funcSenha" placeholder="Mínimo 4 caracteres" minlength="4" required />
+      </div>
+      <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <button type="button" class="btn-secondary" onclick="fecharModalFuncionario()" style="flex: 1;">Cancelar</button>
+        <button type="submit" class="btn-primary" style="flex: 2;">Salvar Funcionário</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   PAINEL RH — INTEGRADO COM SUPER ADMIN + COLABORADOR
+   ============================================================ */
+
+const ADMIN_CONFIG_KEY = 'engage_rh_admin_config_v1';
+const EMPRESAS_DB_KEY = 'engage_rh_empresas_db';
+
+document.addEventListener('DOMContentLoaded', () => {
+  checkAdminAccess();
+  setupMasks();
+  setupTabs();
+});
+
+function getEmpresaId() {
+  const config = JSON.parse(localStorage.getItem(ADMIN_CONFIG_KEY) || '{}');
+  return config.empresaId;
+}
+
+function getFuncionariosKey() {
+  const id = getEmpresaId();
+  return `engage_rh_funcionarios_${id}`;
+}
+
+function getFuncionarios() {
+  const data = localStorage.getItem(getFuncionariosKey());
+  return data ? JSON.parse(data) : [];
+}
+
+function saveFuncionarios(funcs) {
+  localStorage.setItem(getFuncionariosKey(), JSON.stringify(funcs));
+}
+
+/* ---------- AUTENTICAÇÃO ---------- */
+function checkAdminAccess() {
+  const config = localStorage.getItem(ADMIN_CONFIG_KEY);
+  if (config) {
+    document.getElementById('unlockScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    const data = JSON.parse(config);
+    carregarDadosEmpresa(data);
+    renderFuncionarios();
+    recalcularFolha();
+  } else {
+    document.getElementById('unlockScreen').style.display = 'flex';
+    document.getElementById('adminApp').style.display = 'none';
+  }
+}
+
+function carregarDadosEmpresa(config) {
+  document.getElementById('displayEmpresa').textContent = config.empresa;
+  document.getElementById('bannerEmpresa').textContent = config.empresa;
+  document.getElementById('bannerCNPJ').textContent = config.cnpj;
+  document.getElementById('bannerPlano').textContent = config.plano || '---';
+  document.getElementById('bannerAdmin').textContent = config.admin;
+}
+
+function validarContraSuperAdmin(cnpjDigitado, chaveDigitada) {
+  const empresasDB = localStorage.getItem(EMPRESAS_DB_KEY);
+  if (!empresasDB) return { ok: false, erro: 'Nenhuma empresa cadastrada no Super Admin.' };
+
+  const empresas = JSON.parse(empresasDB);
+  const cnpjLimpo = cnpjDigitado.replace(/\D/g, '');
+  const empresa = empresas.find(e => e.cnpj.replace(/\D/g, '') === cnpjLimpo);
+
+  if (!empresa) return { ok: false, erro: 'CNPJ não encontrado.' };
+  if (empresa.status !== 'Ativa') return { ok: false, erro: `Empresa com status "${empresa.status}".` };
+
+  const chaveDigitadaLimpa = chaveDigitada.replace(/[-\s]/g, '').toUpperCase();
+  const chaveCadastradaLimpa = empresa.chaveSecreta.replace(/[-\s]/g, '').toUpperCase();
+
+  if (chaveDigitadaLimpa !== chaveCadastradaLimpa) return { ok: false, erro: 'Chave secreta inválida.' };
+
+  return { ok: true, empresa };
+}
+
+document.getElementById('unlockForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nome = document.getElementById('adminNome').value.trim();
+  const cnpj = document.getElementById('empresaCNPJ').value.trim();
+  const chave = document.getElementById('secretKey').value.trim();
+  const errorDiv = document.getElementById('unlockError');
+  const btn = document.getElementById('btnUnlock');
+
+  errorDiv.style.display = 'none';
+
+  if (cnpj.replace(/\D/g, '').length !== 14) {
+    errorDiv.textContent = 'CNPJ inválido.'; errorDiv.style.display = 'block'; return;
+  }
+  if (chave.replace(/[-\s]/g, '').length !== 16) {
+    errorDiv.textContent = 'Chave deve ter 16 caracteres.'; errorDiv.style.display = 'block'; return;
+  }
+
+  btn.disabled = true; btn.textContent = "Validando...";
+
+  setTimeout(() => {
+    const validacao = validarContraSuperAdmin(cnpj, chave);
+    if (!validacao.ok) {
+      errorDiv.textContent = '❌ ' + validacao.erro;
+      errorDiv.style.display = 'block';
+      btn.disabled = false; btn.textContent = "Ativar Painel";
+      return;
+    }
+
+    const configData = {
+      admin: nome,
+      empresa: validacao.empresa.nomeFantasia,
+      razaoSocial: validacao.empresa.razaoSocial,
+      cnpj: validacao.empresa.cnpj,
+      plano: validacao.empresa.plano,
+      empresaId: validacao.empresa.id,
+      ativadoEm: new Date().toISOString()
+    };
+    localStorage.setItem(ADMIN_CONFIG_KEY, JSON.stringify(configData));
+    checkAdminAccess();
+  }, 800);
+});
+
+function resetAdminConfig() {
+  if (confirm("Apagar configuração local e exigir nova ativação?")) {
+    localStorage.removeItem(ADMIN_CONFIG_KEY);
+    location.reload();
+  }
+}
+
+/* ---------- TABS ---------- */
+function setupTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+}
+
+/* ---------- MÁSCARAS ---------- */
+function setupMasks() {
+  const cnpjInput = document.getElementById('empresaCNPJ');
+  cnpjInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, "").slice(0, 14);
+    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+    e.target.value = v;
+  });
+
+  const keyInput = document.getElementById('secretKey');
+  keyInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 16);
+    v = v.match(/.{1,4}/g)?.join('-') || v;
+    e.target.value = v;
+  });
+
+  const salarioInput = document.getElementById('funcSalario');
+  salarioInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+  });
+}
+
+/* ---------- GESTÃO DE FUNCIONÁRIOS ---------- */
+function abrirModalFuncionario(id = null) {
+  const modal = document.getElementById('modalFuncionario');
+  const form = document.getElementById('formFuncionario');
+  form.reset();
+  document.getElementById('funcId').value = '';
+  document.getElementById('modalFuncTitle').textContent = 'Cadastrar Funcionário';
+
+  if (id) {
+    const funcs = getFuncionarios();
+    const f = funcs.find(x => x.id === id);
+    if (f) {
+      document.getElementById('funcId').value = f.id;
+      document.getElementById('funcNome').value = f.nome;
+      document.getElementById('funcMatricula').value = f.matricula;
+      document.getElementById('funcEmail').value = f.email;
+      document.getElementById('funcCargo').value = f.cargo;
+      document.getElementById('funcSalario').value = f.salarioBase;
+      document.getElementById('funcSenha').value = f.senha;
+      document.getElementById('modalFuncTitle').textContent = 'Editar Funcionário';
+    }
+  }
+  modal.classList.add('show');
+}
+
+function fecharModalFuncionario() {
+  document.getElementById('modalFuncionario').classList.remove('show');
+}
+
+document.getElementById('formFuncionario').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const funcs = getFuncionarios();
+  const id = document.getElementById('funcId').value;
+
+  const novoFunc = {
+    id: id || ('f_' + Date.now()),
+    nome: document.getElementById('funcNome').value.trim(),
+    matricula: document.getElementById('funcMatricula').value.trim(),
+    email: document.getElementById('funcEmail').value.trim(),
+    cargo: document.getElementById('funcCargo').value.trim(),
+    salarioBase: parseFloat(document.getElementById('funcSalario').value) || 0,
+    senha: document.getElementById('funcSenha').value,
+    status: 'Ativo',
+    criadoEm: new Date().toISOString()
+  };
+
+  // Verifica matrícula duplicada
+  const matDuplicada = funcs.find(f => f.matricula === novoFunc.matricula && f.id !== novoFunc.id);
+  if (matDuplicada) {
+    alert('Já existe um funcionário com esta matrícula!');
+    return;
+  }
+
+  if (id) {
+    const idx = funcs.findIndex(f => f.id === id);
+    funcs[idx] = { ...funcs[idx], ...novoFunc };
+  } else {
+    funcs.push(novoFunc);
+  }
+
+  saveFuncionarios(funcs);
+  fecharModalFuncionario();
+  renderFuncionarios();
+  recalcularFolha();
+  alert(id ? 'Funcionário atualizado!' : 'Funcionário cadastrado! Ele já pode acessar o portal com matrícula e senha.');
+});
+
+function excluirFuncionario(id) {
+  if (!confirm('Excluir este funcionário? Ele perderá acesso ao portal.')) return;
+  const funcs = getFuncionarios().filter(f => f.id !== id);
+  saveFuncionarios(funcs);
+  renderFuncionarios();
+  recalcularFolha();
+}
+
+function renderFuncionarios() {
+  const funcs = getFuncionarios();
+  const tbody = document.getElementById('funcTableBody');
+  tbody.innerHTML = '';
+
+  let totalFolha = 0;
+  funcs.forEach(f => totalFolha += f.salarioBase);
+
+  document.getElementById('statTotalFunc').textContent = funcs.length;
+  document.getElementById('statFolhaTotal').textContent = totalFolha.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  document.getElementById('statTicketMedio').textContent = funcs.length > 0
+    ? (totalFolha / funcs.length).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+    : 'R$ 0';
+
+  if (funcs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 32px; color: var(--text-soft);">Nenhum funcionário cadastrado. Clique em "+ Cadastrar Funcionário".</td></tr>';
+    return;
+  }
+
+  funcs.forEach(f => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight: 600;">${f.nome}</td>
+      <td><code style="background:#F3F4F6;padding:2px 6px;border-radius:4px;">${f.matricula}</code></td>
+      <td style="font-size: 0.85rem;">${f.email}</td>
+      <td>${f.cargo}</td>
+      <td style="font-weight: 700;">${f.salarioBase.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+      <td><span class="badge badge-ok">${f.status}</span></td>
+      <td>
+        <button class="btn-detail" onclick="abrirModalFuncionario('${f.id}')">Editar</button>
+        <button class="btn-danger" onclick="excluirFuncionario('${f.id}')">Excluir</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ---------- FOLHA DE PAGAMENTO ---------- */
+function recalcularFolha() {
+  const funcs = getFuncionarios();
+  const tbody = document.getElementById('folhaTableBody');
+  tbody.innerHTML = '';
+
+  let totalFolha = 0, totalMinHE = 0, totalValorHE = 0, totalDesc = 0;
+  const DIVISOR = 220;
+
+  funcs.forEach(f => {
+    const valorHora = f.salarioBase / DIVISOR;
+    const minHE = f.minutosExtrasMes || 0;
+    const minNeg = f.minutosNegativosMes || 0;
+    const valorHE = (minHE / 60) * valorHora * 1.5;
+    const valorDesc = (minNeg / 60) * valorHora;
+    const liquido = f.salarioBase + valorHE - valorDesc;
+
+    totalFolha += liquido;
+    totalMinHE += minHE;
+    totalValorHE += valorHE;
+    totalDesc += valorDesc;
+
+    const fmtMin = (m) => `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}h`;
+    const fmtR$ = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight: 600;">${f.nome}</td>
+      <td>${f.matricula}</td>
+      <td>${fmtR$(f.salarioBase)}</td>
+      <td class="valor-positivo">${minHE > 0 ? `+${fmtMin(minHE)}<br><small>${fmtR$(valorHE)}</small>` : '-'}</td>
+      <td class="valor-negativo">${minNeg > 0 ? `-${fmtMin(minNeg)}<br><small>${fmtR$(valorDesc)}</small>` : '-'}</td>
+      <td style="font-weight: 800;">${fmtR$(liquido)}</td>
+      <td><span class="badge badge-ok">OK</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('statTotalFolha').textContent = totalFolha.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  document.getElementById('statTotalHE').textContent = `${String(Math.floor(totalMinHE/60)).padStart(2,'0')}:${String(totalMinHE%60).padStart(2,'0')}h`;
+  document.getElementById('statValorHE').textContent = totalValorHE.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  document.getElementById('statTotalDescontos').textContent = totalDesc.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+</script>
+
+</body>
+</html>
