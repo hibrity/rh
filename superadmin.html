@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>EngageRH — Super Admin (Master)</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --roxo-escuro: #2A1B4E;
+    --roxo-medio: #3D2A6E;
+    --indigo: #4F46E5;
+    --indigo-claro: #6366F1;
+    --rosa-neon: #FF3CAC;
+    --verde-ok: #10B981;
+    --amarelo: #F59E0B;
+    --vermelho: #EF4444;
+    --bg: #F4F5F9;
+    --card: #FFFFFF;
+    --text: #1A1A2E;
+    --text-soft: #6B7280;
+    --border: #E5E7EB;
+    --shadow-sm: 0 2px 8px rgba(42, 27, 78, 0.06);
+    --shadow-md: 0 8px 24px rgba(42, 27, 78, 0.10);
+    --radius: 16px;
+    --grad-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 50%, #FF3CAC 100%);
+    --grad-dark: linear-gradient(135deg, #2A1B4E 0%, #3D2A6E 100%);
+  }
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5;
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  input, select { font-family: inherit; }
+
+  /* ============ LOGIN SUPER ADMIN ============ */
+  .login-overlay {
+    position: fixed; inset: 0; background: var(--grad-dark);
+    display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px;
+  }
+  .login-box {
+    background: var(--card); border-radius: 24px; padding: 32px;
+    width: 100%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .login-box h2 { color: var(--roxo-escuro); margin-bottom: 8px; }
+  .login-box p { color: var(--text-soft); font-size: 0.9rem; margin-bottom: 24px; }
+
+  /* ============ DASHBOARD MASTER ============ */
+  .master-app { display: none; max-width: 1200px; margin: 0 auto; padding: 32px; }
+  .master-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .master-title { font-size: 1.5rem; font-weight: 800; color: var(--roxo-escuro); display: flex; align-items: center; gap: 12px; }
+  .master-badge { background: var(--grad-primary); color: #fff; padding: 4px 12px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; }
+
+  .btn-primary {
+    padding: 12px 24px; background: var(--grad-primary); color: #fff;
+    border-radius: 10px; font-weight: 700; font-size: 0.95rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform 0.15s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); }
+  .btn-secondary {
+    padding: 10px 20px; background: #fff; color: var(--text);
+    border: 1.5px solid var(--border); border-radius: 10px; font-weight: 600;
+  }
+
+  /* ============ FORMULÁRIO DE CADASTRO ============ */
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    background: var(--card); padding: 24px; border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); margin-bottom: 32px; display: none;
+  }
+  .form-grid.active { display: grid; animation: fadeIn 0.3s ease; }
+  .form-full { grid-column: 1 / -1; }
+  
+  .form-group label {
+    display: block; font-size: 0.75rem; font-weight: 700;
+    color: var(--text-soft); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-group input, .form-group select {
+    width: 100%; padding: 12px; border: 1.5px solid var(--border);
+    border-radius: 10px; font-size: 0.95rem; background: #FAFAFC;
+  }
+  .form-group input:focus { outline: none; border-color: var(--indigo); background: #fff; }
+
+  /* ============ TABELA DE EMPRESAS ============ */
+  .table-container {
+    background: var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .data-table th {
+    background: #F9FAFB; padding: 14px 16px; text-align: left;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    color: var(--text-soft); border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text);
+  }
+  .data-table tr:hover { background: #FAFAFC; }
+  
+  .badge { display: inline-block; padding: 4px 10px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; }
+  .badge-active { background: #D1FAE5; color: #065F46; }
+  .badge-pending { background: #FEF3C7; color: #92400E; }
+
+  .key-display {
+    font-family: "SF Mono", monospace; background: #F3F4F6;
+    padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; letter-spacing: 1px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .key-display:hover { background: #E5E7EB; }
+
+  /* ============ MODAL DE CREDENCIAIS ============ */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(42,27,78,0.6);
+    backdrop-filter: blur(8px); display: none; align-items: center;
+    justify-content: center; z-index: 10000; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff; border-radius: 20px; padding: 32px;
+    max-width: 450px; width: 100%; text-align: center;
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .modal-icon { font-size: 3rem; margin-bottom: 12px; }
+  .credential-box {
+    background: #F9FAFB; border: 1px dashed var(--indigo);
+    border-radius: 12px; padding: 16px; margin: 16px 0; text-align: left;
+  }
+  .credential-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+  .credential-row:last-child { margin-bottom: 0; }
+  .credential-label { color: var(--text-soft); font-weight: 600; }
+  .credential-value { font-family: monospace; font-weight: 700; color: var(--roxo-escuro); }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- 1. TELA DE LOGIN SUPER ADMIN -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <div style="font-size: 2.5rem; margin-bottom: 12px;">🛡️</div>
+    <h2>Acesso Master</h2>
+    <p>Gerenciamento de Empresas e Licenças EngageRH</p>
+    <form id="masterLoginForm">
+      <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+        <label>E-mail Master</label>
+        <input type="text" id="masterEmail" value="admin@engagerh.com" required />
+      </div>
+      <div class="form-group" style="margin-bottom: 24px; text-align: left;">
+        <label>Senha Master</label>
+        <input type="password" id="masterPass" value="master2026" required />
+      </div>
+      <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Acessar Painel</button>
+    </form>
+  </div>
+</div>
+
+<!-- 2. PAINEL SUPER ADMIN -->
+<div id="masterApp" class="master-app">
+  <header class="master-header">
+    <div class="master-title">
+      ⚡ EngageRH <span class="master-badge">SUPER ADMIN</span>
+    </div>
+    <button class="btn-secondary" onclick="logoutMaster()">Sair</button>
+  </header>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <h3 style="font-size: 1.1rem; font-weight: 700;">Empresas Cadastradas</h3>
+    <button class="btn-primary" onclick="toggleForm()">+ Cadastrar Nova Empresa</button>
+  </div>
+
+  <!-- Formulário de Cadastro -->
+  <div id="cadastroForm" class="form-grid">
+    <div class="form-group">
+      <label>Razão Social</label>
+      <input type="text" id="razaoSocial" placeholder="Ex: Tech Solutions Ltda" required />
+    </div>
+    <div class="form-group">
+      <label>Nome Fantasia</label>
+      <input type="text" id="nomeFantasia" placeholder="Ex: Tech Solutions" required />
+    </div>
+    <div class="form-group">
+      <label>CNPJ</label>
+      <input type="text" id="cnpjEmpresa" placeholder="00.000.000/0000-00" maxlength="18" required />
+    </div>
+    <div class="form-group">
+      <label>Plano Contratado</label>
+      <select id="planoEmpresa">
+        <option value="Básico">Básico (Até 50 func.)</option>
+        <option value="Profissional">Profissional (Até 200 func.)</option>
+        <option value="Enterprise">Enterprise (Ilimitado)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nome do Administrador da Empresa</label>
+      <input type="text" id="adminEmpresaNome" placeholder="Ex: Carlos Diretor" required />
+    </div>
+    <div class="form-group">
+      <label>E-mail do Administrador</label>
+      <input type="email" id="adminEmpresaEmail" placeholder="carlos@techsolutions.com" required />
+    </div>
+    <div class="form-group form-full" style="display: flex; gap: 12px; margin-top: 8px;">
+      <button type="button" class="btn-secondary" onclick="toggleForm()" style="flex: 1;">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="salvarEmpresa()" style="flex: 2; justify-content: center;">Gerar Chave e Cadastrar</button>
+    </div>
+  </div>
+
+  <!-- Tabela de Empresas -->
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Empresa</th>
+          <th>CNPJ</th>
+          <th>Administrador</th>
+          <th>Plano</th>
+          <th>Chave Secreta (16 dígitos)</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="empresasTableBody">
+        <!-- Preenchido via JS -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 3. MODAL DE CREDENCIAIS GERADAS -->
+<div id="credentialModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon">🔑</div>
+    <h3 style="font-size: 1.2rem; font-weight: 800; color: var(--roxo-escuro); margin-bottom: 8px;">Empresa Cadastrada com Sucesso!</h3>
+    <p style="font-size: 0.9rem; color: var(--text-soft); margin-bottom: 16px;">
+      Envie estas credenciais ao administrador da empresa. Ele usará a <strong>Chave Secreta</strong> para desbloquear o painel administrativo deles pela primeira vez.
+    </p>
+    
+    <div class="credential-box">
+      <div class="credential-row">
+        <span class="credential-label">Empresa:</span>
+        <span class="credential-value" id="modalEmpresa">---</span>
+      </div>
+      <div class="credential-row">
+        <span class="credential-label">Admin:</span>
+        <span class="credential-value" id="modalAdmin">---</span>
+      </div>
+      <div class="credential-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ccc;">
+        <span class="credential-label">CHAVE SECRETA:</span>
+        <span class="credential-value" id="modalChave" style="font-size: 1.1rem; color: var(--indigo);">---</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="fecharModal()">Entendi, Fechar</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   LÓGICA DO SUPER ADMIN (MASTER)
+   ============================================================ */
+
+const DB_KEY = 'engage_rh_empresas_db';
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+  checkMasterSession();
+  setupMasks();
+  renderTable();
+});
+
+/* ---------- 1. AUTENTICAÇÃO MASTER ---------- */
+function checkMasterSession() {
+  const isLogged = sessionStorage.getItem('engage_master_logged');
+  if (isLogged === 'true') {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('masterApp').style.display = 'block';
+  }
+}
+
+document.getElementById('masterLoginForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  // Em produção, validar contra backend. Aqui, simulação.
+  const email = document.getElementById('masterEmail').value;
+  const pass = document.getElementById('masterPass').value;
+  
+  if (email === 'admin@engagerh.com' && pass === 'master2026') {
+    sessionStorage.setItem('engage_master_logged', 'true');
+    checkMasterSession();
+  } else {
+    alert('Credenciais master inválidas!');
+  }
+});
+
+function logoutMaster() {
+  sessionStorage.removeItem('engage_master_logged');
+  location.reload();
+}
+
+/* ---------- 2. GERENCIAMENTO DE EMPRESAS ---------- */
+function getEmpresas() {
+  const data = localStorage.getItem(DB_KEY);
+  return data ? JSON.parse(data) : [];
+}
+
+function saveEmpresas(empresas) {
+  localStorage.setItem(DB_KEY, JSON.stringify(empresas));
+}
+
+// Gera uma chave alfanumérica aleatória de 16 caracteres
+function gerarChaveSecreta() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Sem I, O, 0, 1 para evitar confusão
+  let chave = '';
+  for (let i = 0; i < 16; i++) {
+    chave += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  // Formata em grupos de 4 para facilitar a leitura: XXXX-XXXX-XXXX-XXXX
+  return chave.match(/.{1,4}/g).join('-');
+}
+
+function toggleForm() {
+  const form = document.getElementById('cadastroForm');
+  form.classList.toggle('active');
+}
+
+function salvarEmpresa() {
+  const razao = document.getElementById('razaoSocial').value.trim();
+  const fantasia = document.getElementById('nomeFantasia').value.trim();
+  const cnpj = document.getElementById('cnpjEmpresa').value.trim();
+  const plano = document.getElementById('planoEmpresa').value;
+  const adminNome = document.getElementById('adminEmpresaNome').value.trim();
+  const adminEmail = document.getElementById('adminEmpresaEmail').value.trim();
+
+  if (!razao || !cnpj || !adminNome || !adminEmail) {
+    alert('Preencha todos os campos obrigatórios!');
+    return;
+  }
+
+  const cnpjLimpo = cnpj.replace(/\D/g, '');
+  if (cnpjLimpo.length !== 14) {
+    alert('CNPJ inválido!');
+    return;
+  }
+
+  const novaEmpresa = {
+    id: Date.now().toString(),
+    razaoSocial: razao,
+    nomeFantasia: fantasia,
+    cnpj: cnpj,
+    plano: plano,
+    adminNome: adminNome,
+    adminEmail: adminEmail,
+    chaveSecreta: gerarChaveSecreta(),
+    dataCadastro: new Date().toLocaleDateString('pt-BR'),
+    status: 'Pendente de Ativação'
+  };
+
+  const empresas = getEmpresas();
+  empresas.push(novaEmpresa);
+  saveEmpresas(empresas);
+
+  // Mostrar Modal com Credenciais
+  document.getElementById('modalEmpresa').textContent = fantasia;
+  document.getElementById('modalAdmin').textContent = adminNome;
+  document.getElementById('modalChave').textContent = novaEmpresa.chaveSecreta;
+  document.getElementById('credentialModal').classList.add('show');
+
+  // Limpar formulário
+  document.getElementById('razaoSocial').value = '';
+  document.getElementById('nomeFantasia').value = '';
+  document.getElementById('cnpjEmpresa').value = '';
+  document.getElementById('adminEmpresaNome').value = '';
+  document.getElementById('adminEmpresaEmail').value = '';
+  toggleForm();
+  renderTable();
+}
+
+function fecharModal() {
+  document.getElementById('credentialModal').classList.remove('show');
+}
+
+function renderTable() {
+  const empresas = getEmpresas();
+  const tbody = document.getElementById('empresasTableBody');
+  tbody.innerHTML = '';
+
+  if (empresas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 32px; color: var(--text-soft);">Nenhuma empresa cadastrada ainda.</td></tr>';
+    return;
+  }
+
+  empresas.forEach(emp => {
+    const tr = document.createElement('tr');
+    const statusClass = emp.status === 'Ativa' ? 'badge-active' : 'badge-pending';
+    
+    tr.innerHTML = `
+      <td>
+        <div style="font-weight: 700;">${emp.nomeFantasia}</div>
+        <div style="font-size: 0.75rem; color: var(--text-soft);">${emp.razaoSocial}</div>
+      </td>
+      <td style="font-family: monospace;">${emp.cnpj}</td>
+      <td>
+        <div style="font-weight: 600;">${emp.adminNome}</div>
+        <div style="font-size: 0.75rem; color: var(--indigo);">${emp.adminEmail}</div>
+      </td>
+      <td><span class="badge" style="background: #E0E7FF; color: #3730A3;">${emp.plano}</span></td>
+      <td>
+        <span class="key-display" onclick="copiarChave('${emp.chaveSecreta.replace(/-/g, '')}')" title="Clique para copiar">
+          ${emp.chaveSecreta}
+        </span>
+      </td>
+      <td><span class="badge ${statusClass}">${emp.status}</span></td>
+      <td>
+        <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.75rem;" onclick="ativarEmpresa('${emp.id}')">
+          ${emp.status === 'Ativa' ? 'Desativar' : 'Ativar'}
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function ativarEmpresa(id) {
+  const empresas = getEmpresas();
+  const emp = empresas.find(e => e.id === id);
+  if (emp) {
+    emp.status = emp.status === 'Ativa' ? 'Pendente de Ativação' : 'Ativa';
+    saveEmpresas(empresas);
+    renderTable();
+  }
+}
+
+function copiarChave(chaveLimpa) {
+  navigator.clipboard.writeText(chaveLimpa).then(() => {
+    alert('Chave copiada para a área de transferência! (Sem os hifens)');
+  });
+}
+
+/* ---------- 3. MÁSCARAS ---------- */
+function setupMasks() {
+  const cnpjInput = document.getElementById('cnpjEmpresa');
+  cnpjInput.addEventListener('input', (e) => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length > 14) v = v.slice(0, 14);
+    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+    e.target.value = v;
+  });
+}
+</script>
+
+</body>
+</html>
